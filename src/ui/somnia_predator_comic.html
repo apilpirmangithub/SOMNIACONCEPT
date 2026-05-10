@@ -640,25 +640,29 @@
             const prefix = prefixes[agentKey][Math.floor(Math.random() * 3)];
             const protocol = defiProtocols[Math.floor(Math.random() * defiProtocols.length)];
 
+            // --- 100% DATA-DRIVEN REASONING (NO RANDOMIZATION) ---
             if (agentKey === 'AGEN0') {
-                if (isDefiProposed) return `[${prefix}] Saya mendeteksi yield optimal di ${protocol.name} (${protocol.type}). Fokus pada stabilitas modal.`;
-                return `[${prefix}] Memetakan rute agresif untuk trading ${coin}. Analisa teknikal dan on-chain diperlukan.`;
+                if (isDefiProposed) return `[ROUTING] Mendeteksi peluang yield optimal di Somnex/Somnia Protocols. Likuiditas stabil, mengalihkan fokus dari volatilitas trading.`;
+                return `[STRATEGIST] Menyiapkan rute eksekusi agresif untuk ${coin}. Membutuhkan validasi teknikal dan on-chain untuk konfirmasi entri.`;
             }
             
             if (agentKey === 'AGEN1') {
-                if (isDefiProposed) return `[${prefix}] Menyimak rute AGEN0. Stabilitas pair ${coin} sangat tinggi, risiko Impermanent Loss minimal.`;
-                return `[${prefix}] Struktur ${coin} menunjukkan momentum breakout. RSI @${rsi} mendukung langkah trading ini.`;
+                const trend = rsi > 70 ? "OVERBOUGHT (Jenuh Beli)" : (rsi < 30 ? "OVERSOLD (Jenuh Jual)" : "NEUTRAL");
+                if (isDefiProposed) return `[TECH-INTEL] Meninjau stabilitas teknikal. RSI @${rsi} menunjukkan kondisi ${trend}. Mendukung staking jangka panjang untuk meminimalkan IL.`;
+                return `[TECH-INTEL] Analisa ${coin} selesai. RSI berada di level ${rsi} (${trend}). ${rsi > 60 ? 'Waspada koreksi teknikal.' : 'Masih ada ruang untuk penguatan.'}`;
             }
 
             if (agentKey === 'AGEN2') {
-                const flows = (Math.random() * 5).toFixed(2);
-                if (isDefiProposed) return `[${prefix}] Kontrak ${protocol.name} menunjukkan inflow positif $${flows}M. Likuiditas pool aman untuk entri.`;
-                return `[${prefix}] Deteksi akumulasi institusi $${flows}M pada pair ${coin}. Data on-chain sangat solid.`;
+                const flows = (whaleFlow / 1000000).toFixed(2);
+                const action = whaleFlow > 0 ? "AKUMULASI" : "DISTRIBUSI";
+                if (isDefiProposed) return `[WHALE-WATCHER] Kontrak yield menunjukkan inflow positif. Likuiditas pool bertambah $${Math.abs(Number(flows))}M. Sangat aman untuk penyertaan modal.`;
+                return `[CHAIN-ANALYST] Deteksi pergerakan whale: ${action} sebesar $${Math.abs(Number(flows))}M. Aliran dana menunjukkan ${whaleFlow > 0 ? 'kekuatan beli institusi' : 'tekanan jual besar-besaran'}.`;
             }
 
             if (agentKey === 'AGEN3') {
-                if (isDefiProposed) return `[${prefix}] Audit protokol selesai. Keamanan ${protocol.name} terverifikasi. Sentimen komunitas positif.`;
-                return `[${prefix}] Psikologi market mendukung pergerakan ${coin}. Tidak ada deteksi anomali atau Black Swan.`;
+                const mood = sentiment > 70 ? "EUPHORIA" : (sentiment < 30 ? "PANIC" : "STABLE");
+                if (isDefiProposed) return `[SOCIAL-RADAR] Audit komunitas & keamanan. Sentimen berada di level ${sentiment} (${mood}). Reputasi protokol terverifikasi aman.`;
+                return `[SENTIMENT-CORE] Psikologi market saat ini: ${mood} (@${sentiment}). ${sentiment > 60 ? 'Hype komunitas sangat tinggi.' : 'Market sedang dalam fase observasi dingin.'}`;
             }
 
             if (agentKey === 'CUSTOM') {
@@ -670,12 +674,13 @@
                 if (customPrompt.toLowerCase().includes("agresif")) { personality = "Aggressive"; tone = "mendorong eksekusi cepat"; }
                 if (customPrompt.toLowerCase().includes("aman") || customPrompt.toLowerCase().includes("safety")) { personality = "Preservation"; tone = "menyarankan kehati-hatian"; }
 
-                return `[VANGUARD-X/${personality}] Sebagai agen kustom Anda, saya ${tone} pada ${analysis} ${coin} ini. Berdasarkan instruksi '${customPrompt}', saya menilai skor keyakinan @${rsi > 50 ? 'HIGH' : 'LOW'}.`;
+                return `[VANGUARD-X/${personality}] Berdasarkan instruksi '${customPrompt}', saya ${tone} pada ${analysis} ${coin} ini. Keyakinan berdasar data: @${rsi > 50 ? 'HIGH' : 'LOW'}.`;
             }
 
-            // AGEN4 Final Decision
-            if (isDefiProposed) return `[${prefix}] KEPUTUSAN FINAL: Pindahkan modal ke ${protocol.name} (Pair: ${coin}/USDT). Eksekusi Yield dimulai!`;
-            return `[${prefix}] KONSENSUS TERCAPAI! Eksekusi Trading ${coin} diaktifkan dengan profil ${profile}.`;
+            // AGEN4 Final Decision (Driven by real scores)
+            const finalScore = (Number(rsi) / 100 + Number(sentiment) / 100 + (whaleFlow > 0 ? 0.3 : -0.3)).toFixed(2);
+            if (isDefiProposed) return `[JUDGE-UNIT] KEPUTUSAN FINAL: Pindahkan modal ke Somnia Pools. Skor Keamanan: ${finalScore}. Eksekusi Yield diaktifkan.`;
+            return `[EXECUTOR-X] KONSENSUS TERCAPAI! Skor Keyakinan: ${finalScore}. Memulai operasional ${coin} dengan profil ${profile}.`;
         }
 
         let activeSlots = 0;

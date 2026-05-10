@@ -619,7 +619,7 @@
 
         async function fetchRawMessage(agentFolder, profile, coin, context = "") {
             const agentKey = agentFolder.toUpperCase();
-            const rsi = Math.floor(Math.random() * 40 + 30);
+            const { rsi, whaleFlow, sentiment } = profile;
             const isDefiProposed = context.includes("yield") || context.includes("DeFi") || context.includes("LP") || context.includes("Vault");
 
             const defiProtocols = [

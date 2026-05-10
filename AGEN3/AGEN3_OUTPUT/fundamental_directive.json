@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-05-09T19:52:15.528Z",
+  "market_psychology": "FEAR",
+  "fear_greed_score": 38,
+  "social_hype_alerts": "ACTIVE_DISCUSSIONS",
+  "top_reddit_topics": [
+    "Daily Crypto Discussion - May 8, 2026 (GMT+0)",
+    "84% of Polymarket traders are losing money. That says a lot about who prediction markets are really built for",
+    "The 4 year anniversary of the Terra Luna crash"
+  ],
+  "latest_fundamental_news": null,
+  "system_killswitch": false
+}

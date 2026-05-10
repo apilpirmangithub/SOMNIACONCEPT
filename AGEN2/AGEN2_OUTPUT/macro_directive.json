@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-05-09T19:43:08.650Z",
+  "assets": {
+    "ETH": {
+      "onchain_bias": "BULLISH",
+      "funding_rate_warning": "NORMAL",
+      "open_interest_usd": 5067384033.09312
+    },
+    "SOL": {
+      "onchain_bias": "BEARISH",
+      "funding_rate_warning": "NORMAL",
+      "open_interest_usd": 1106281259.221
+    }
+  },
+  "global_tvl_health": "DECLINING"
+}

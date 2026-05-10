@@ -1,5 +1,5 @@
-import { CollaborativeForum } from './collaborative_reasoning';
-import { fetchLiveSomniaData } from './somnia_provider';
+import { CollaborativeForum } from './consensus';
+import { fetchLiveSomniaData } from '../providers/somnia';
 
 // Simulated state management
 let activeActions = {
@@ -53,13 +53,15 @@ async function startOrchestratorLoop() {
 
             // 2. COLLABORATIVE REASONING
             forum.clear();
-            await forum.participate("AGEN0", marketData, currentCoin);
-            await forum.participate("AGEN1", marketData, currentCoin);
-            await forum.participate("AGEN2", marketData, currentCoin);
-            await forum.participate("AGEN3", marketData, currentCoin);
+            await forum.participate("AGEN0", marketData, currentCoin, "");
+            const commanderMsg = forum.getLatestOpinion(); // Get the rute suggested by Commander
+            
+            await forum.participate("AGEN1", marketData, currentCoin, commanderMsg);
+            await forum.participate("AGEN2", marketData, currentCoin, commanderMsg);
+            await forum.participate("AGEN3", marketData, currentCoin, commanderMsg);
 
             if (customAgentActive) {
-                await forum.participate("CUSTOM", { ...marketData, customPrompt: customAgentPrompt } as any, currentCoin);
+                await forum.participate("CUSTOM", { ...marketData, customPrompt: customAgentPrompt } as any, currentCoin, commanderMsg);
             }
 
             // 3. CONSENSUS RESOLUTION

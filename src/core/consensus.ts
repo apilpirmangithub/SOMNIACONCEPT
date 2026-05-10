@@ -10,7 +10,7 @@ export class CollaborativeForum {
     /**
      * Agen masuk ke forum, mendengarkan yang lain, dan memberikan opini berbasis data.
      */
-    async participate(agentName: string, rawData: any, userProfile: string) {
+    async participate(agentName: string, rawData: any, currentCoin: string, context: string = "") {
         console.log(`\n[${agentName}] Menganalisa berdasarkan SKILLS.md...`);
         
         let opinion = "";
@@ -21,9 +21,9 @@ export class CollaborativeForum {
                 const yieldAPY = Math.floor(Math.random() * 80);
                 if (yieldAPY > 30) {
                     bias = 0.1; 
-                    opinion = `[DEFI] Trading saat ini berisiko. Menemukan peluang YIELD di Somnia Pool dengan APY ${yieldAPY}%. Lebih stabil untuk profil ${userProfile}.`;
+                    opinion = `[DEFI] Trading saat ini berisiko. Menemukan peluang YIELD di Somnia Pool dengan APY ${yieldAPY}%. Lebih stabil.`;
                 } else {
-                    opinion = `[AGEN0] Kapasitas siap. Merutekan modal ke ${userProfile} engine untuk perburuan aktif.`;
+                    opinion = `[AGEN0] Kapasitas siap. Merutekan modal ke mesin trading untuk perburuan aktif.`;
                 }
                 break;
 
@@ -34,7 +34,7 @@ export class CollaborativeForum {
                 if (isDeFi) {
                     const stability = rsi > 40 && rsi < 60 ? "sangat stabil" : "fluktuatif";
                     bias = stability === "sangat stabil" ? 1 : 0.5;
-                    opinion = `[TECH] Menganalisa rute LP dari AGEN0. Volatilitas pair ${currentCoin} sedang ${stability}. Risiko Impermanent Loss (IL) minimal, mendukung eksekusi yield.`;
+                    opinion = `[TECH] Menganalisa rute LP dari AGEN0. Volatilitas pair ${currentCoin} sedang ${stability}. Risiko Impermanent Loss (IL) minimal.`;
                 } else {
                     const techState = (rawData.adx || 20) > 25 ? (rawData.close > rawData.ema20 ? "trending UP" : "trending DOWN") : "sideways";
                     bias = (techState === "trending UP" && rsi < 50) ? 1 : (techState === "trending DOWN" && rsi > 50 ? -1 : 0);
@@ -49,7 +49,7 @@ export class CollaborativeForum {
                 if (isDeFiFlow) {
                     const poolHealth = whaleFlow > 0 ? "inflow positif" : "distribusi ringan";
                     bias = whaleFlow > -500000 ? 1 : 0.2;
-                    opinion = `[ON-CHAIN] Memantau Smart Contract Pool. Terdeteksi ${poolHealth} ke dalam protokol. Likuiditas di Somnex untuk ${currentCoin} cukup dalam untuk entri kita.`;
+                    opinion = `[ON-CHAIN] Memantau Smart Contract Pool. Terdeteksi ${poolHealth} ke dalam protokol. Likuiditas untuk ${currentCoin} cukup dalam.`;
                 } else {
                     const flowType = whaleFlow > 1000000 ? "akumulasi masif" : (whaleFlow < -1000000 ? "distribusi agresif" : "konsolidasi");
                     bias = whaleFlow > 800000 ? 1 : (whaleFlow < -800000 ? -1 : 0);
@@ -63,7 +63,7 @@ export class CollaborativeForum {
 
                 if (isDeFiSecurity) {
                     bias = sentiment > 40 ? 1 : -1;
-                    opinion = `[SOCIAL] Audit reputasi protokol. Somnex V3 memiliki record keamanan solid. Sentimen komunitas terhadap pool ${currentCoin} positif (@${sentiment}). Rute aman.`;
+                    opinion = `[SOCIAL] Audit reputasi protokol. Somnex V3 memiliki record keamanan solid. Sentimen terhadap pool ${currentCoin} positif (@${sentiment}).`;
                 } else {
                     const psych = sentiment > 70 ? "euforia" : (sentiment < 30 ? "panik" : "skeptis");
                     bias = sentiment > 75 ? 0.6 : (sentiment < 25 ? -0.6 : 0);
@@ -87,6 +87,10 @@ export class CollaborativeForum {
             this.weights["CUSTOM"] = 0.35; 
         }
         return opinion;
+    }
+
+    getLatestOpinion(): string {
+        return this.sharedContext.length > 0 ? this.sharedContext[this.sharedContext.length - 1].opinion : "";
     }
 
     /**

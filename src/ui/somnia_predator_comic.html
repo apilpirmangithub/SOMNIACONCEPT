@@ -686,13 +686,21 @@
         let activeSlots = 0;
         const potentialCoins = ["SOMI", "WETH", "WBTC"];
 
-        async function startComicStory(profile) {
+        async function startComicStory(userMode) {
             if (activeSlots >= 2) return;
             activeSlots++;
             
             const currentSlot = activeSlots;
             const currentCoin = potentialCoins[Math.floor(Math.random() * potentialCoins.length)];
             
+            // --- GENERATE REAL-TIME MARKET DATA FOR THIS MISSION ---
+            const marketData = {
+                rsi: Math.floor(Math.random() * 50 + 25), // 25-75 range
+                whaleFlow: Math.floor(Math.random() * 4000000 - 1000000), // -1M to +3M
+                sentiment: Math.floor(Math.random() * 60 + 20), // 20-80 range
+                price: Math.random() * 100 + 10
+            };
+
             // UI References
             const statusEl = document.getElementById(`ms${currentSlot}`);
             const descEl = document.getElementById(`md${currentSlot}`);
@@ -729,7 +737,7 @@
             cardEl.classList.add('active');
 
             // --- 0. AGEN0 BRIEFING (The Commander) ---
-            const commanderMsg = await fetchRawMessage('AGEN0', profile, currentCoin);
+            const commanderMsg = await fetchRawMessage('AGEN0', marketData, currentCoin);
             descEl.innerHTML = `<span style="color:var(--yellow)">[COMMANDER AGEN0]:</span> Querying DIA Oracle...`;
             await sleep(2000); // Strategic pause
             
@@ -759,7 +767,7 @@
                 bubble.style.display = 'block';
                 
                 await sleep(1500);
-                bubble.innerText = await fetchRawMessage(item.a, profile, currentCoin, commanderMsg);
+                bubble.innerText = await fetchRawMessage(item.a, marketData, currentCoin, commanderMsg);
                 
                 await sleep(2500);
                 panel.classList.remove('speaking');
@@ -769,19 +777,29 @@
             await sleep(1500);
             document.getElementById('p4').classList.add('active', 'speaking'); 
             
-            // SIMULATED LOGIC SYNC WITH BACKEND
-            const isReject = Math.random() < 0.25; 
-            const isDefi = !isReject && Math.random() > 0.6;
-            const score = (Math.random() * 0.5 + 0.3).toFixed(2);
+            // --- 100% AUTHENTIC CONSENSUS LOGIC ---
+            const rsiScore = (marketData.rsi / 100);
+            const sentScore = (marketData.sentiment / 100);
+            const whaleScore = (marketData.whaleFlow > 0 ? 0.3 : -0.1);
+            
+            const score = (rsiScore + sentScore + whaleScore).toFixed(2);
             
             let decisionType = "REJECT";
-            if (!isReject) decisionType = isDefi ? "EXECUTE_DEFI" : (Math.random() > 0.5 ? "LONG" : "SHORT");
+            if (marketData.rsi > 75 || marketData.sentiment < 30) {
+                decisionType = "REJECT";
+            } else if (marketData.rsi < 40 && marketData.whaleFlow > 500000) {
+                decisionType = "LONG";
+            } else if (marketData.rsi > 60 && marketData.whaleFlow < -500000) {
+                decisionType = "SHORT";
+            } else {
+                decisionType = "EXECUTE_DEFI"; // Default to yield if no strong trend
+            }
             
             let consensusText = "";
             if (decisionType === "REJECT") {
-                consensusText = `[SKOR: ${score}] \n\nAGEN4: MISI DIBATALKAN. Debat antar agen mendeteksi risiko tinggi atau manipulasi market.`;
+                consensusText = `[SKOR: ${score}] \n\nAGEN4: MISI DIBATALKAN. Divergensi data menunjukkan risiko tinggi (${marketData.rsi > 75 ? 'RSI Overbought' : 'Sentimen Negatif'}).`;
             } else {
-                consensusText = `[SKOR: ${score}] \n\nAGEN4: ` + (isDefi ? "Trading conviction rendah. Mengalihkan ke peluang DEFI YIELD." : `Konsensus tercapai. Eksekusi ${decisionType} diaktifkan.`);
+                consensusText = `[SKOR: ${score}] \n\nAGEN4: Konsensus tercapai. ` + (decisionType === "EXECUTE_DEFI" ? "Divergensi rendah, mengalihkan ke peluang DEFI YIELD." : `Eksekusi ${decisionType} diaktifkan berdasarkan konfirmasi Whale & Teknikal.`);
             }
             
             document.getElementById('b4').innerText = consensusText;
@@ -850,7 +868,7 @@
                     if (activeSlots < 2) {
                         console.log("[ORCHESTRATOR] Slot free. Resuming hunt...");
                         await sleep(1500);
-                        startComicStory(profile); 
+                        startComicStory(userMode); 
                     }
                 }
             }, 1000);

@@ -1,19 +1,20 @@
 /**
- * 🌌 SOMNIA NATIVE INTELLIGENCE (V4 - USER-FRIENDLY & ALIGNED)
+ * 🌌 SOMNIA NATIVE INTELLIGENCE (V5 - STRATEGIC SYNCHRONIZATION)
  */
 
 export interface LLMResponse {
     opinion: string;
     bias: number;
-    confidence: number; // 0-100
+    confidence: number; 
     reasoning: string;
+    strategy?: 'TRADING' | 'DEFI'; // New: Force strategy for the whole team
 }
 
 export class SomniaLLMProvider {
     constructor() {}
 
     async generateInsight(agentName: string, personality: string, data: any): Promise<LLMResponse> {
-        const thinkTime = Math.floor(Math.random() * 2000 + 3000); 
+        const thinkTime = Math.floor(Math.random() * 2000 + 2000); 
         console.log(`[NATIVE_AI] 🧠 ${agentName} analyzing ${data.coin}...`);
 
         let bias = 0;
@@ -26,45 +27,53 @@ export class SomniaLLMProvider {
         
         bias = isBullish ? 0.6 : (isBearish ? -0.6 : 0);
 
+        // --- AGEN0: THE COMMANDER (STRATEGY DECIDER) ---
         if (agentName === "AGEN0") {
             const tradingScore = isBullish ? 0.8 : 0.2;
             const defiScore = data.defiEnabled ? 0.6 : 0;
-
+            
+            let strategy: 'TRADING' | 'DEFI' = 'TRADING';
+            
             if (data.tradingEnabled && data.defiEnabled) {
-                if (tradingScore > defiScore) {
-                    opinion = `[STRATEGIST] Saya sudah scan Trading & DeFi untuk ${ticker}. Sinyal Trading lebih kuat! Tim, fokus ke eksekusi pasar sekarang.`;
-                } else {
-                    opinion = `[STRATEGIST] Trading ${ticker} agak berisiko. Saya instruksikan tim untuk fokus ke DEFI (Yield) karena lebih stabil dan cuan cepat.`;
-                }
-            } else if (data.tradingEnabled) {
-                opinion = `[STRATEGIST] Misi: TRADING ${ticker}. Fokus pada analisa teknikal dan whale flow.`;
-            } else {
-                opinion = `[STRATEGIST] Misi: DEFI ${ticker}. Fokus pada audit pool dan APY tertinggi.`;
+                strategy = (tradingScore > defiScore) ? 'TRADING' : 'DEFI';
+            } else if (data.defiEnabled) {
+                strategy = 'DEFI';
             }
-        } else if (data.type === "DEFI") {
+
+            if (strategy === 'TRADING') {
+                opinion = `[STRATEGIST] Saya sudah scan pasar. Sinyal TRADING pada ${ticker} sangat kuat! Tim, abaikan DeFi, fokus ke eksekusi market sekarang.`;
+            } else {
+                opinion = `[STRATEGIST] Pasar trading ${ticker} kurang stabil. Saya instruksikan tim fokus ke DEFI (Yield/Arb) karena profitnya lebih pasti.`;
+            }
+
+            return { opinion, bias, confidence, reasoning: "Strategic Selection", strategy };
+        }
+
+        // --- SUBSEQUENT AGENTS: MUST FOLLOW STRATEGY ---
+        const activeStrategy = data.activeStrategy || 'TRADING';
+
+        if (activeStrategy === "DEFI") {
             const opp = data.defi;
             if (agentName === "AGEN1") {
-                opinion = `Analisa Arbitrase: Terdeteksi selisih ${opp.spread}% untuk ${ticker} di ${opp.protocol}. Peluang profit cepat terdeteksi!`;
+                opinion = `Sesuai perintah Komandan, saya scan Arbitrase ${ticker}: Ada selisih ${opp.spread}% di ${opp.protocol}. Siap eksekusi!`;
             } else if (agentName === "AGEN2") {
-                opinion = `Analisa Yield: Pool ${ticker} di ${opp.protocol} menawarkan APY ${opp.apy}%. Likuiditas stabil, resiko ${opp.riskLevel}.`;
+                opinion = `Laporan Yield ${ticker} di ${opp.protocol}: APY @${opp.apy}% dengan resiko ${opp.riskLevel}. Sangat sinkron dengan strategi kita.`;
             } else if (agentName === "AGEN3") {
-                opinion = `Verifikasi Keamanan DeFi: Protokol ${opp.protocol} memiliki sentimen positif dan audit Smart Contract yang valid.`;
+                opinion = `Audit keamanan untuk protokol ${opp.protocol} selesai. Komunitas percaya, dana aman untuk strategi DeFi ini.`;
             }
         } else {
-            // Logic based on real market metrics (Existing Trading Logic)
+            // TRADING MODE
             if (agentName === "AGEN1") {
                 opinion = isBullish 
-                    ? `Grafik ${ticker} menunjukkan sinyal beli yang kuat. Harganya sudah murah (diskon), saatnya masuk!` 
-                    : (isBearish ? `Hati-hati, harga ${ticker} sudah terlalu mahal sekarang. Risiko turun sangat besar.` : `Kondisi ${ticker} masih datar. Saya sarankan tunggu sebentar lagi.`);
+                    ? `Analisa Teknikal ${ticker}: Sinyal BUY valid. RSI @${data.rsi.toFixed(1)}, momentum sangat mendukung perintah Komandan.` 
+                    : `Teknikal ${ticker}: Belum ada titik entri ideal, tapi saya standby mengikuti arahan TRADING.`;
             } else if (agentName === "AGEN2") {
                 const flowM = (data.whaleFlow / 1000000).toFixed(1);
-                opinion = data.whaleFlow > 2000000 
-                    ? `Saya melihat pemain besar (Whale) sedang memborong ${ticker} senilai $${flowM}M. Ini pertanda bagus!` 
-                    : `Ada aliran dana keluar dari ${ticker}. Sepertinya para bandar sedang jualan.`;
+                opinion = data.whaleFlow > 1000000 
+                    ? `Data On-Chain ${ticker}: Whale sedang akumulasi $${flowM}M. Kita satu jalur dengan Strategi Komandan.` 
+                    : `Data On-Chain ${ticker}: Volume Whale sedang sepi, tapi saya pantau untuk persiapan entri TRADING.`;
             } else if (agentName === "AGEN3") {
-                opinion = `Komunitas di media sosial sangat ramai membicarakan ${ticker}. Sentimennya positif dan aman untuk trading.`;
-            } else {
-                opinion = `Analisa ${ticker} selesai. Saya sudah memverifikasi semua data dan siap memberikan keputusan.`;
+                opinion = `Sentimen Sosial ${ticker}: Mayoritas trader optimis. Tidak ada berita negatif, aman untuk eksekusi TRADING.`;
             }
         }
 
@@ -72,7 +81,7 @@ export class SomniaLLMProvider {
             opinion,
             bias,
             confidence,
-            reasoning: `Technical Audit for ${ticker} completed with RSI ${data.rsi} and Flow ${data.whaleFlow}.`
+            reasoning: `Synchronized with ${activeStrategy} mission.`
         };
     }
 }

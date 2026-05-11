@@ -52,26 +52,33 @@ export async function startOrchestratorLoop(io: Server) {
 
                     const defiProvider = new (require('../providers/defi').DeFiProvider)();
                     const defiOpps = await defiProvider.getOpportunities();
+                    
+                    let activeStrategy: 'TRADING' | 'DEFI' = 'TRADING';
 
                     for (const agent of agents) {
                         if (!activeLoops.get(socket.id)) break;
                         
-                        // Emit analytical stages for transparency
-                        socket.emit('system-log', { agent, message: `STAGE 1/3: Scraping & Parsing ${currentCoin} website...` });
-                        await sleep(1000);
-                        socket.emit('system-log', { agent, message: `STAGE 2/3: Checking DeFi Yields & Arb Spreads...` });
-                        await sleep(1000);
-                        socket.emit('system-log', { agent, message: `STAGE 3/3: Running deterministic LLM extraction...` });
+                        socket.emit('system-log', { agent, message: `STAGE: Analyzing ${currentCoin} with council...` });
 
-                        // Check if we should feed DeFi data
-                        const isDeFiRound = Math.random() > 0.5;
-                        const agentData = isDeFiRound ? { 
-                            type: "DEFI", 
-                            defi: defiOpps[Math.floor(Math.random() * defiOpps.length)],
-                            coin: currentCoin 
-                        } : { ...marketData, coin: currentCoin };
+                        // Prepare data based on current strategy context
+                        const agentData = { 
+                            ...marketData, 
+                            coin: currentCoin,
+                            activeStrategy, // Pass the strategy chosen by AGEN0
+                            defi: defiOpps[Math.floor(Math.random() * defiOpps.length)]
+                        };
 
                         const response = await forum.participate(agent, agentData, currentCoin);
+                        
+                        // If it's AGEN0, lock the strategy for everyone else
+                        if (agent === "AGEN0" && response.strategy) {
+                            activeStrategy = response.strategy;
+                            socket.emit('system-log', { 
+                                agent: "SYSTEM", 
+                                message: `STRATEGY LOCKED: Council is now focusing on ${activeStrategy} for ${currentCoin}.` 
+                            });
+                        }
+
                         socket.emit('agent-thought', { 
                             agent, 
                             opinion: response.opinion, 

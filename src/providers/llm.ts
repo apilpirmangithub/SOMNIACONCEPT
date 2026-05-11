@@ -30,19 +30,31 @@ export class SomniaLLMProvider {
         await new Promise(r => setTimeout(r, thinkTime * 0.3));
         // Simulate Stage 1: Scrape & Parse
         
-        if (agentName === "AGEN1") {
-            opinion = isBullish 
-                ? `Grafik ${ticker} menunjukkan sinyal beli yang kuat. Harganya sudah murah (diskon), saatnya masuk!` 
-                : (isBearish ? `Hati-hati, harga ${ticker} sudah terlalu mahal sekarang. Risiko turun sangat besar.` : `Kondisi ${ticker} masih datar. Saya sarankan tunggu sebentar lagi.`);
-        } else if (agentName === "AGEN2") {
-            const flowM = (data.whaleFlow / 1000000).toFixed(1);
-            opinion = data.whaleFlow > 2000000 
-                ? `Saya melihat pemain besar (Whale) sedang memborong ${ticker} senilai $${flowM}M. Ini pertanda bagus!` 
-                : `Ada aliran dana keluar dari ${ticker}. Sepertinya para bandar sedang jualan.`;
-        } else if (agentName === "AGEN3") {
-            opinion = `Komunitas di media sosial sangat ramai membicarakan ${ticker}. Sentimennya positif dan aman untuk trading.`;
+        if (data.type === "DEFI") {
+            const opp = data.defi;
+            if (agentName === "AGEN1") {
+                opinion = `Analisa Arbitrase: Terdeteksi selisih ${opp.spread}% untuk ${ticker} di ${opp.protocol}. Peluang profit cepat terdeteksi!`;
+            } else if (agentName === "AGEN2") {
+                opinion = `Analisa Yield: Pool ${ticker} di ${opp.protocol} menawarkan APY ${opp.apy}%. Likuiditas stabil, resiko ${opp.riskLevel}.`;
+            } else if (agentName === "AGEN3") {
+                opinion = `Verifikasi Keamanan DeFi: Protokol ${opp.protocol} memiliki sentimen positif dan audit Smart Contract yang valid.`;
+            }
         } else {
-            opinion = `Analisa ${ticker} selesai. Saya sudah memverifikasi semua data dan siap memberikan keputusan.`;
+            // Logic based on real market metrics (Existing Trading Logic)
+            if (agentName === "AGEN1") {
+                opinion = isBullish 
+                    ? `Grafik ${ticker} menunjukkan sinyal beli yang kuat. Harganya sudah murah (diskon), saatnya masuk!` 
+                    : (isBearish ? `Hati-hati, harga ${ticker} sudah terlalu mahal sekarang. Risiko turun sangat besar.` : `Kondisi ${ticker} masih datar. Saya sarankan tunggu sebentar lagi.`);
+            } else if (agentName === "AGEN2") {
+                const flowM = (data.whaleFlow / 1000000).toFixed(1);
+                opinion = data.whaleFlow > 2000000 
+                    ? `Saya melihat pemain besar (Whale) sedang memborong ${ticker} senilai $${flowM}M. Ini pertanda bagus!` 
+                    : `Ada aliran dana keluar dari ${ticker}. Sepertinya para bandar sedang jualan.`;
+            } else if (agentName === "AGEN3") {
+                opinion = `Komunitas di media sosial sangat ramai membicarakan ${ticker}. Sentimennya positif dan aman untuk trading.`;
+            } else {
+                opinion = `Analisa ${ticker} selesai. Saya sudah memverifikasi semua data dan siap memberikan keputusan.`;
+            }
         }
 
         return {

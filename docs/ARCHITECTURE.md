@@ -2,9 +2,46 @@
 
 Sistem SOMGEN PREDATOR dibangun di atas arsitektur **Multi-Agent Intelligence** yang sangat modular dan skalabel. Setiap komponen bekerja secara sinkron untuk mengubah data mentah dari jaringan Somnia menjadi keputusan trading yang memiliki konviktifitas tinggi.
 
-## 📊 System Overview Infographic
+## 📊 System Overview Diagram
 
-![SOMGEN Architecture Infographic](somgen_infographic.png)
+![SOMGEN Professional Architecture](somgen_infographic.png)
+
+---
+
+## 🧬 Technical Logic Flow (Mermaid)
+
+```mermaid
+graph LR
+    subgraph "Data Sources"
+        A[Somnia RPC]
+        B[DIA Oracle]
+        C[Social Feeds]
+    end
+
+    subgraph "Intelligence Council (Agents)"
+        D[AGEN1: Technical]
+        E[AGEN2: On-Chain]
+        F[AGEN3: Social]
+        G{AGEN4: Judge}
+    end
+
+    subgraph "Output"
+        H[EXECUTE TRADE]
+        I[REJECT/PROTECT]
+    end
+
+    A --> D
+    A --> E
+    B --> D
+    C --> F
+    
+    D --> G
+    E --> G
+    F --> G
+    
+    G -- "Score > 60%" --> H
+    G -- "Score < 60%" --> I
+```
 
 ---
 
@@ -12,28 +49,21 @@ Sistem SOMGEN PREDATOR dibangun di atas arsitektur **Multi-Agent Intelligence** 
 
 ### 1. Intelligence Layer (The Council)
 Ini adalah otak dari SOMGEN, terdiri dari 4 agen spesialis:
-*   **AGEN1 (Technical Sniper)**: Menganalisa RSI, Moving Averages, dan pola candlestick.
-*   **AGEN2 (On-Chain Sleuth)**: Melacak aliran dana Whale dan aktivitas mempool di Somnia.
-*   **AGEN3 (Social Sentinel)**: Melakukan scraping sentimen komunitas dan berita terkini.
-*   **AGEN4 (Executive Judge)**: Memberikan vonis final berdasarkan skor konsensus dari ketiga agen lainnya.
+*   **AGEN1 (Technical Sniper)**: Fokus pada RSI, Trend, dan Volatilitas.
+*   **AGEN2 (On-Chain Sleuth)**: Melacak aliran dana Whale dan Volume Trading.
+*   **AGEN3 (Social Sentinel)**: Menganalisa sentimen komunitas dan validitas berita.
+*   **AGEN4 (Executive Judge)**: Melakukan pembobotan konsensus dan penentuan leverage.
 
-### 2. Data Providers
-Penyedia data real-time yang mensuplai informasi ke Intelligence Layer:
-*   **Somnia RPC Provider**: Menarik data on-chain langsung dari jaringan.
-*   **Social Scraper (Playwright)**: Mengambil bukti visual (Evidence) dari web.
-*   **Native AI Engine**: Melakukan proses *Deep Reasoning* secara deterministik.
+### 2. Deep Reasoning Engine
+Menggunakan algoritma **Somnia Native Intelligence** untuk mensimulasikan proses berpikir agen selama 3-6 detik. Proses ini memastikan setiap opini agen didasarkan pada data real-time yang sudah disanitasi.
 
-### 3. Consensus & Execution Loop
-Proses pengambilan keputusan yang mengikuti alur:
-1.  **Request**: User memulai misi melalui UI.
-2.  **Debate**: Agen saling memberikan opini dan membantah satu sama lain.
-3.  **Threshold Check**: Skor harus melewati ambang batas (60%+) untuk eksekusi.
-4.  **Audit**: Pengecekan saldo dan delegasi akses (jika diaktifkan).
-5.  **Final Order**: Eksekusi posisi LONG/SHORT atau REJECT.
+### 3. Safety & Consensus
+*   **Consensus Threshold**: Minimal keyakinan 60% untuk setiap keputusan trading.
+*   **Dynamic Leverage**: Leverage dihitung secara otomatis berdasarkan tingkat keyakinan agen.
 
 ---
 
 ## 🚀 Filosofi Desain
-SOMGEN dirancang dengan prinsip **"Trust but Verify"**. Tidak ada agen yang memiliki otoritas tunggal; setiap keputusan adalah hasil dari perdebatan sengit yang bisa diaudit melalui Live Terminal Log.
+SOMGEN dirancang dengan prinsip **"Data over Hype"**. Arsitektur ini memastikan bahwa keputusan trading tidak diambil secara emosional, melainkan melalui proses audit berlapis oleh AI spesialis.
 
-**SOMGEN: The Predator of Somnia Network.** 🌌🛡️⚖️
+**SOMGEN: Precision Trading for Somnia Network.** 🌌🛡️⚖️

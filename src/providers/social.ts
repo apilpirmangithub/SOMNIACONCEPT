@@ -3,14 +3,21 @@
  * Captures real visual proof from the web for the Agent Monitors.
  */
 
-import { chromium } from 'playwright'; // High-end browser automation
+import { chromium } from 'playwright'; 
 import path from 'path';
 
 export class EvidenceScraper {
+    private folderMap: { [key: string]: string } = {
+        "AGEN0": "commander",
+        "AGEN1": "technical",
+        "AGEN2": "onchain",
+        "AGEN3": "social",
+        "AGEN4": "judge",
+        "CUSTOM": "commander" // Fallback for custom agent
+    };
+
     /**
-     * Captures a real-world screenshot for an agent.
-     * @param agentName AGEN1, AGEN2, or AGEN3
-     * @param targetUrl The live URL to scrape data from.
+     * Captures a real-world screenshot for an agent and saves it to its modular folder.
      */
     async captureProof(agentName: string, targetUrl: string) {
         console.log(`[${agentName}] 📸 INITIATING REAL-TIME SCRAPING: ${targetUrl}`);
@@ -22,13 +29,13 @@ export class EvidenceScraper {
             await page.setViewportSize({ width: 800, height: 600 });
             await page.goto(targetUrl, { waitUntil: 'networkidle' });
 
-            // Wait a bit for charts/data to load fully
             await page.waitForTimeout(5000);
 
-            const outputPath = path.join(process.cwd(), agentName, `${agentName}_OUTPUT`, 'evidence.png');
+            const folder = this.folderMap[agentName] || "judge";
+            const outputPath = path.join(process.cwd(), 'src', 'agents', folder, 'evidence', 'evidence.png');
 
             await page.screenshot({ path: outputPath });
-            console.log(`[${agentName}] ✅ EVIDENCE CAPTURED: ${outputPath}`);
+            console.log(`[${agentName}] ✅ MODULAR EVIDENCE CAPTURED: ${outputPath}`);
 
         } catch (error) {
             console.error(`[${agentName}] ❌ SCRAPING FAILED:`, error);

@@ -21,7 +21,7 @@ SOMGEN PREDATOR adalah engine trading multi-agen otonom yang dirancang untuk jar
 SOMGEN/
 ├── src/
 │   ├── core/           # Otak sistem (Orchestrator, Server, Consensus)
-│   ├── providers/      # Integrasi data (Somnia RPC, Real LLM, Social Scraper)
+│   ├── providers/      # Integrasi data (Somnia RPC, Native Intelligence)
 │   ├── agents/         # Logika spesifik masing-masing agen
 │   └── ui/             # Dashboard (Modular CSS, JS, HTML)
 ├── artifacts/          # Bukti eksekusi (Screenshots/Evidence)
@@ -43,8 +43,12 @@ SOMGEN/
    npm install
    ```
 
-3. **Setup Environment (Opsional):**
-   Tambahkan `SOMNIA_AI_KEY` di file `.env` untuk mengaktifkan Production LLM. Jika tidak ada, sistem akan otomatis masuk ke mode **Advanced Local Reasoning**.
+3. **Jalankan Engine:**
+   ```bash
+   npx ts-node src/core/server.ts
+   ```
+
+Sistem akan otomatis berjalan menggunakan **Somnia Native Intelligence** (Logika AI Lokal yang sudah terintegrasi).
 
 ---
 
@@ -52,31 +56,25 @@ SOMGEN/
 
 Ikuti langkah-langkah berikut untuk mengaktifkan Dashboard Predator:
 
-1. **Jalankan Server:**
-   Buka terminal di folder root dan ketik:
-   ```bash
-   npx ts-node src/core/server.ts
-   ```
-
-2. **Buka Dashboard:**
+1. **Akses Dashboard:**
    Buka browser (Chrome/Edge) dan akses alamat berikut:
    👉 **[http://localhost:8080/](http://localhost:8080/)**
 
-3. **Pilih Mode Misi:**
+2. **Pilih Mode Misi:**
    *   **Opsi A (Vanguard-X):** Tulis instruksi kustom di kotak teks "FORGE CUSTOM AGENT" lalu klik tombol biru.
    *   **Opsi B (Standar):** Ketik salah satu mode (`AGGRESSIVE`, `NORMAL`, atau `SAFETY`) di kotak input bawah dan tekan **Enter**.
 
-4. **Pantau Debat Real-Time:**
+3. **Pantau Debat Real-Time:**
    *   Lihat panel komik saat agen mulai bicara satu per satu.
    *   Perhatikan **Terminal Log** di bagian bawah untuk melihat proses "Deep Reasoning" (Langkah 1, Langkah 2, dll).
    *   Tunggu hingga **AGEN4 (The Judge)** memberikan vonis final beserta angkanya (Leverage/Target).
 
-5. **Reset Sesi:**
+4. **Reset Sesi:**
    Cukup tekan **F5 (Refresh)** di browser Anda untuk menghentikan seluruh proses di server dan memulai dari nol kembali.
 
 ---
 
 ## 🛡️ Keamanan & Integritas
-Sistem ini dilengkapi dengan **Wallet Auditor** (simulasi) dan **Consensus Threshold** yang tinggi. Keputusan `REJECT` akan muncul jika tingkat keyakinan agen di bawah 60%, memastikan modal Anda hanya digunakan untuk peluang dengan konviktifitas tinggi.
+Sistem ini dilengkapi dengan **Consensus Threshold** yang tinggi. Keputusan `REJECT` akan muncul jika tingkat keyakinan agen di bawah standar keamanan, memastikan modal Anda terlindungi dari volatilitas ekstrim.
 
 **SOMGEN: Hunt Smart. Trade Hard.** 🌌⚖️🚀

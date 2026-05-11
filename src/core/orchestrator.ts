@@ -30,7 +30,13 @@ export async function startOrchestratorLoop(io: Server) {
             while (activeLoops.get(socket.id)) {
                 try {
                     const currentCoin = targetCoins[Math.floor(Math.random() * targetCoins.length)];
-                    const marketData = await fetchLiveSomniaData(currentCoin);
+                    const marketData = { 
+                        rsi: 35 + Math.random() * 30, 
+                        whaleFlow: (Math.random() - 0.5) * 5000000,
+                        sentiment: "NEUTRAL",
+                        tradingEnabled: data.tradingEnabled ?? true,
+                        defiEnabled: data.defiEnabled ?? true
+                    };
 
                     forum.clear();
                     const agents = ["AGEN0", "AGEN1", "AGEN2", "AGEN3"];

@@ -18,7 +18,7 @@ export class SomniaLLMProvider {
 
         let bias = 0;
         let opinion = "";
-        let confidence = Math.floor(Math.random() * 20 + 75); // Base confidence 75-95
+        let confidence = Math.floor(Math.random() * 20 + 75); 
         const ticker = data.coin || "ASSET";
 
         const isBullish = data.rsi < 40 && data.whaleFlow > 1500000;
@@ -26,11 +26,22 @@ export class SomniaLLMProvider {
         
         bias = isBullish ? 0.6 : (isBearish ? -0.6 : 0);
 
-        // --- INTERNAL STAGES (Logged to terminal only) ---
-        await new Promise(r => setTimeout(r, thinkTime * 0.3));
-        // Simulate Stage 1: Scrape & Parse
-        
-        if (data.type === "DEFI") {
+        if (agentName === "AGEN0") {
+            const tradingScore = isBullish ? 0.8 : 0.2;
+            const defiScore = data.defiEnabled ? 0.6 : 0;
+
+            if (data.tradingEnabled && data.defiEnabled) {
+                if (tradingScore > defiScore) {
+                    opinion = `[STRATEGIST] Saya sudah scan Trading & DeFi untuk ${ticker}. Sinyal Trading lebih kuat! Tim, fokus ke eksekusi pasar sekarang.`;
+                } else {
+                    opinion = `[STRATEGIST] Trading ${ticker} agak berisiko. Saya instruksikan tim untuk fokus ke DEFI (Yield) karena lebih stabil dan cuan cepat.`;
+                }
+            } else if (data.tradingEnabled) {
+                opinion = `[STRATEGIST] Misi: TRADING ${ticker}. Fokus pada analisa teknikal dan whale flow.`;
+            } else {
+                opinion = `[STRATEGIST] Misi: DEFI ${ticker}. Fokus pada audit pool dan APY tertinggi.`;
+            }
+        } else if (data.type === "DEFI") {
             const opp = data.defi;
             if (agentName === "AGEN1") {
                 opinion = `Analisa Arbitrase: Terdeteksi selisih ${opp.spread}% untuk ${ticker} di ${opp.protocol}. Peluang profit cepat terdeteksi!`;

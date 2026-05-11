@@ -98,7 +98,15 @@ input.addEventListener('keypress', async (e) => {
             landing.style.display = 'none';
             mainContainer.style.display = 'grid';
             
-            socket.emit('start-mission', { mode: val, isCustomActive: false });
+            const tradingEnabled = document.getElementById('check-trading').checked;
+            const defiEnabled = document.getElementById('check-defi').checked;
+
+            socket.emit('start-mission', { 
+                mode: val, 
+                isCustomActive: false,
+                tradingEnabled,
+                defiEnabled
+            });
             
             startComicStory(val);
             logToTerminal("SYSTEM", `Mission Started in ${val} mode.`);

@@ -29,7 +29,18 @@
         </div>
 
         <p style="margin-top: 30px; font-family: 'Permanent Marker'; color: #666;">ATAU PILIH MODE STANDAR:</p>
-        <input type="text" class="input-box" id="chat-input" placeholder="KETIK AGGRESSIVE / NORMAL / SAFETY">
+        <div class="mode-selection" style="display: flex; gap: 20px; justify-content: center; margin-bottom: 20px;">
+            <label style="cursor:pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="check-trading" checked style="accent-color: var(--blue);"> 
+                <span style="font-family: 'Outfit', sans-serif; font-size: 0.9rem;">TRADING MODE</span>
+            </label>
+            <label style="cursor:pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="check-defi" checked style="accent-color: var(--green);"> 
+                <span style="font-family: 'Outfit', sans-serif; font-size: 0.9rem;">DEFI ENGINE</span>
+            </label>
+        </div>
+
+        <input type="text" id="chat-input" placeholder="TIPE MODE: AGGRESSIVE / NORMAL / SAFETY" autofocus>
     </div>
 
     <button id="toggle-sidebar" onclick="toggleSidebar()" style="display: none;">STATS: ON</button>

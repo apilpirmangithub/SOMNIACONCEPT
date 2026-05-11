@@ -27,26 +27,31 @@ export class SomniaLLMProvider {
         
         bias = isBullish ? 0.6 : (isBearish ? -0.6 : 0);
 
-        // --- AGEN0: THE COMMANDER (STRATEGY DECIDER) ---
+        // --- AGEN0: THE COMMANDER (STRICT STRATEGY SELECTION) ---
         if (agentName === "AGEN0") {
-            const tradingScore = isBullish ? 0.8 : 0.2;
-            const defiScore = data.defiEnabled ? 0.6 : 0;
+            // Profit Potential Scoring (0.0 to 1.0)
+            const tradingPotential = (data.rsi < 30 && data.whaleFlow > 2500000) ? 0.9 : (isBullish ? 0.6 : 0.1);
+            const defiOpp = data.defi || {};
+            const defiPotential = (defiOpp.apy > 30 || (defiOpp.spread && defiOpp.spread > 1.0)) ? 0.85 : 0.4;
             
             let strategy: 'TRADING' | 'DEFI' = 'TRADING';
             
             if (data.tradingEnabled && data.defiEnabled) {
-                strategy = (tradingScore > defiScore) ? 'TRADING' : 'DEFI';
+                // Pick the one with significantly higher potential
+                strategy = (tradingPotential >= defiPotential) ? 'TRADING' : 'DEFI';
             } else if (data.defiEnabled) {
                 strategy = 'DEFI';
             }
 
             if (strategy === 'TRADING') {
-                opinion = `[STRATEGIST] Saya sudah scan pasar. Sinyal TRADING pada ${ticker} sangat kuat! Tim, abaikan DeFi, fokus ke eksekusi market sekarang.`;
+                const reason = tradingPotential > 0.8 ? "SINYAL SUPER-BULLISH" : "KONDISI MARKET STABIL";
+                opinion = `[STRATEGIST] Analisa selesai. Saya pilih TRADING untuk ${ticker} karena ${reason}. Profit potential @${(tradingPotential*100).toFixed(0)}%. Tim, siapkan entri presisi!`;
             } else {
-                opinion = `[STRATEGIST] Pasar trading ${ticker} kurang stabil. Saya instruksikan tim fokus ke DEFI (Yield/Arb) karena profitnya lebih pasti.`;
+                const reason = defiPotential > 0.8 ? "DEFI YIELD MELIMPAH" : "SAFETY FIRST";
+                opinion = `[STRATEGIST] Market trading ${ticker} terlalu berisiko/sepi. Saya pilih DEFI karena ${reason} di ${defiOpp.protocol || 'Ekosistem'}. Tim, laksanakan audit pool!`;
             }
 
-            return { opinion, bias, confidence, reasoning: "Strategic Selection", strategy };
+            return { opinion, bias, confidence, reasoning: "Strict Strategic Selection", strategy };
         }
 
         // --- SUBSEQUENT AGENTS: MUST FOLLOW STRATEGY ---

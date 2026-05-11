@@ -1,69 +1,68 @@
-# 🏗️ SOMGEN PREDATOR Architecture
+# 🏗️ SOMGEN PREDATOR Technical Architecture
 
-Sistem SOMGEN PREDATOR dibangun di atas arsitektur **Multi-Agent Intelligence** yang sangat modular dan skalabel. Setiap komponen bekerja secara sinkron untuk mengubah data mentah dari jaringan Somnia menjadi keputusan trading yang memiliki konviktifitas tinggi.
+Sistem SOMGEN PREDATOR dirancang sebagai mesin otonom berbasis **Multi-Agent Council**. Alur logika teknisnya memastikan setiap keputusan trading melalui proses briefing, debat, audit, hingga eksekusi final.
 
-## 📊 System Overview Diagram
-
-![SOMGEN Professional Architecture](somgen_infographic.png)
-
----
-
-## 🧬 Technical Logic Flow (Mermaid)
+## 🧬 Technical Logic Flow
 
 ```mermaid
-graph LR
-    subgraph "Data Sources"
-        A[Somnia RPC]
-        B[DIA Oracle]
-        C[Social Feeds]
-    end
-
-    subgraph "Intelligence Council (Agents)"
-        D[AGEN1: Technical]
-        E[AGEN2: On-Chain]
-        F[AGEN3: Social]
-        G{AGEN4: Judge}
-    end
-
-    subgraph "Output"
-        H[EXECUTE TRADE]
-        I[REJECT/PROTECT]
-    end
-
-    A --> D
-    A --> E
-    B --> D
-    C --> F
+graph TD
+    User([USER]) -- "Starts Mission (Aggressive/Normal/Safety)" --> A0[AGEN0: Lead Strategist]
     
-    D --> G
-    E --> G
-    F --> G
+    A0 -- "Sets Mission Goal & Briefing" --> Council
     
-    G -- "Score > 60%" --> H
-    G -- "Score < 60%" --> I
+    subgraph Data [Data Pipeline]
+        D1[Somnia RPC Provider]
+        D2[DIA Oracle Feed]
+        D3[Social Scraper]
+    end
+
+    subgraph Council [Intelligence Council]
+        A1[AGEN1: Technical Sniper]
+        A2[AGEN2: On-Chain Sleuth]
+        A3[AGEN3: Social Sentinel]
+        A4{AGEN4: Executive Judge}
+    end
+
+    D1 --> A1 & A2
+    D2 --> A1
+    D3 --> A3
+
+    A1 -- "Opinion & Bias" --> A4
+    A2 -- "Opinion & Bias" --> A4
+    A3 -- "Opinion & Bias" --> A4
+
+    A4 -- "Skor > 60% & Valid Audit" --> Exec[EXECUTE TRADE]
+    A4 -- "Skor < 60% / High Risk" --> Prot[REJECT & PROTECT]
+
+    style A0 fill:#f1c40f,stroke:#000,stroke-width:2px,color:#000
+    style A4 fill:#9b59b6,stroke:#000,stroke-width:2px,color:#fff
+    style Exec fill:#2ecc71,stroke:#000,stroke-width:2px,color:#fff
+    style Prot fill:#e74c3c,stroke:#000,stroke-width:2px,color:#fff
 ```
 
 ---
 
-## 🏛️ Komponen Utama
+## 🏛️ Komponen Logika
 
-### 1. Intelligence Layer (The Council)
-Ini adalah otak dari SOMGEN, terdiri dari 4 agen spesialis:
-*   **AGEN1 (Technical Sniper)**: Fokus pada RSI, Trend, dan Volatilitas.
-*   **AGEN2 (On-Chain Sleuth)**: Melacak aliran dana Whale dan Volume Trading.
-*   **AGEN3 (Social Sentinel)**: Menganalisa sentimen komunitas dan validitas berita.
-*   **AGEN4 (Executive Judge)**: Melakukan pembobotan konsensus dan penentuan leverage.
+### 1. Commander Layer (AGEN0)
+*   Menerima instruksi dari User.
+*   Melakukan kalkulasi target awal berdasarkan profil risiko.
+*   Memberikan *briefing* awal kepada dewan agen untuk membatasi ruang lingkup pencarian.
 
-### 2. Deep Reasoning Engine
-Menggunakan algoritma **Somnia Native Intelligence** untuk mensimulasikan proses berpikir agen selama 3-6 detik. Proses ini memastikan setiap opini agen didasarkan pada data real-time yang sudah disanitasi.
+### 2. Analysis Layer (AGEN1, AGEN2, AGEN3)
+*   **AGEN1**: Fokus pada indikator teknis (RSI, Trendline) dari DIA Oracle.
+*   **AGEN2**: Menganalisa pergerakan Whale dan likuiditas dari Somnia RPC.
+*   **AGEN3**: Melakukan audit sentimen komunitas dan berita web melalui scraper.
 
-### 3. Safety & Consensus
-*   **Consensus Threshold**: Minimal keyakinan 60% untuk setiap keputusan trading.
-*   **Dynamic Leverage**: Leverage dihitung secara otomatis berdasarkan tingkat keyakinan agen.
+### 3. Judgment Layer (AGEN4)
+*   Menerima opini dari seluruh Analysis Layer.
+*   Melakukan pembobotan konsensus.
+*   Menghitung **Leverage** secara dinamis berdasarkan *Confidence Score*.
+*   Memberikan vonis final (LONG/SHORT/REJECT).
 
 ---
 
-## 🚀 Filosofi Desain
-SOMGEN dirancang dengan prinsip **"Data over Hype"**. Arsitektur ini memastikan bahwa keputusan trading tidak diambil secara emosional, melainkan melalui proses audit berlapis oleh AI spesialis.
+## 🚀 Deep Reasoning Protocol
+Setiap langkah dalam diagram di atas mengikuti protokol **Deep Reasoning** di mana agen melakukan sinkronisasi data selama 3-6 detik untuk menjamin determinisme sebelum mengeluarkan output.
 
-**SOMGEN: Precision Trading for Somnia Network.** 🌌🛡️⚖️
+**SOMGEN: Built for Precision. Optimized for Somnia.** 🌌🛡️⚖️

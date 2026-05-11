@@ -62,7 +62,14 @@ export async function startOrchestratorLoop(io: Server) {
                         if (!activeLoops.get(socket.id)) break;
                         
                         const currentStage = activeStrategy === 'DEFI' ? "Checking Yields & APY" : "Analyzing Market Structure";
-                        socket.emit('system-log', { agent, message: `STAGE: ${currentStage} for ${currentCoin}...` });
+                        
+                        // DEEP REASONING SIMULATION STAGES
+                        socket.emit('system-log', { agent, message: `STAGE 1/3: Scraping ${currentCoin} network data...` });
+                        await sleep(1500);
+                        socket.emit('system-log', { agent, message: `STAGE 2/3: ${currentStage}...` });
+                        await sleep(1500);
+                        socket.emit('system-log', { agent, message: `STAGE 3/3: Running deterministic reasoning...` });
+                        await sleep(2000); // The "Thinking" Pause
 
                         // Prepare data based on current strategy context
                         const agentData = { 
@@ -89,7 +96,7 @@ export async function startOrchestratorLoop(io: Server) {
                             confidence: response.confidence,
                             coin: currentCoin 
                         });
-                        await sleep(1000);
+                        await sleep(3000); // Pause between agents
                     }
 
                     if (!activeLoops.get(socket.id)) break;

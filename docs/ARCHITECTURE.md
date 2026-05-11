@@ -14,6 +14,7 @@ graph TD
         D1[Somnia RPC Provider]
         D2[DIA Oracle Feed]
         D3[Social Scraper]
+        D4[DeFi Intelligence Provider]
     end
 
     subgraph Council [Intelligence Council]
@@ -26,6 +27,7 @@ graph TD
     D1 --> A1 & A2
     D2 --> A1
     D3 --> A3
+    D4 --> A1 & A2
 
     A1 -- "Opinion & Bias" --> A4
     A2 -- "Opinion & Bias" --> A4

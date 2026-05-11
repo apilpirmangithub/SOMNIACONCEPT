@@ -11,6 +11,7 @@ SOMGEN PREDATOR adalah engine trading multi-agen otonom yang dirancang untuk jar
 *   **🕰️ Deep Reasoning Mode**: Setiap opini agen dihasilkan melalui proses "berpikir" 3-6 detik untuk menjamin validitas analisa data pasar.
 *   **📟 Live Terminal Logging**: Transparansi total dengan streaming "Langkah Analisa Internal" langsung ke terminal dashboard.
 *   **🎨 Premium Comic UI**: Dashboard estetik bertema predator dengan animasi gelembung bicara dinamis.
+*   **🏦 Autonomous DeFi Engine**: Terintegrasi dengan modul pencari bunga (Yield) dan selisih harga (Arbitrage) di ekosistem Somnia.
 *   **🔄 Session-Based Reset**: Sistem otomatis mereset orkestrasi setiap kali browser di-refresh untuk menjaga keamanan sesi.
 
 👉 **[BACA DOKUMENTASI ARSITEKTUR LENGKAP DI SINI](./docs/ARCHITECTURE.md)**

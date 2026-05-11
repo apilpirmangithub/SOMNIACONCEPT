@@ -34,8 +34,8 @@ SOMGEN/
 
 1. **Clone Repository:**
    ```bash
-   git clone https://github.com/apilpirmangithub/HyperScalperX-V3.git
-   cd SOMGEN
+   git clone https://github.com/apilpirmangithub/SOMNIACONCEPT.git
+   cd SOMNIACONCEPT
    ```
 
 2. **Install Dependencies:**

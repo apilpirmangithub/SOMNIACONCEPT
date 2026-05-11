@@ -50,22 +50,26 @@ export async function startOrchestratorLoop(io: Server) {
                     };
                     if (data.isCustomActive) agents.push("CUSTOM");
 
-                    const defiProvider = new (require('../providers/defi').DeFiProvider)();
-                    const defiOpps = await defiProvider.getOpportunities();
+                    let defiOpps = [];
+                    if (data.defiEnabled) {
+                        const defiProvider = new (require('../providers/defi').DeFiProvider)();
+                        defiOpps = await defiProvider.getOpportunities();
+                    }
                     
-                    let activeStrategy: 'TRADING' | 'DEFI' = 'TRADING';
+                    let activeStrategy: 'TRADING' | 'DEFI' = data.defiEnabled && !data.tradingEnabled ? 'DEFI' : 'TRADING';
 
                     for (const agent of agents) {
                         if (!activeLoops.get(socket.id)) break;
                         
-                        socket.emit('system-log', { agent, message: `STAGE: Analyzing ${currentCoin} with council...` });
+                        const currentStage = activeStrategy === 'DEFI' ? "Checking Yields & APY" : "Analyzing Market Structure";
+                        socket.emit('system-log', { agent, message: `STAGE: ${currentStage} for ${currentCoin}...` });
 
                         // Prepare data based on current strategy context
                         const agentData = { 
                             ...marketData, 
                             coin: currentCoin,
-                            activeStrategy, // Pass the strategy chosen by AGEN0
-                            defi: defiOpps[Math.floor(Math.random() * defiOpps.length)]
+                            activeStrategy, 
+                            defi: defiOpps.length > 0 ? defiOpps[Math.floor(Math.random() * defiOpps.length)] : null
                         };
 
                         const response = await forum.participate(agent, agentData, currentCoin);

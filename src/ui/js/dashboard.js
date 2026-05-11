@@ -24,7 +24,10 @@ function logToTerminal(agent, message) {
 
 socket.on('agent-thought', async (data) => {
     console.log(`[REAL-LLM] ${data.agent}: ${data.opinion}`);
-    logToTerminal(data.agent, data.opinion);
+    
+    // Log to terminal with confidence
+    const confidenceText = data.confidence ? ` (Keyakinan: ${data.confidence}%)` : "";
+    logToTerminal(data.agent, data.opinion + confidenceText);
 
     if (data.agent === 'AGEN0') {
         const descEl = document.getElementById('md1');
@@ -43,7 +46,16 @@ socket.on('agent-thought', async (data) => {
         panel.style.filter = "none";
         
         panel.classList.add('active', 'speaking');
-        bubble.innerText = data.opinion;
+        
+        // Show confidence badge in the bubble
+        const color = data.confidence > 85 ? 'var(--green)' : 'var(--yellow)';
+        bubble.innerHTML = `
+            <div style="font-size: 0.6rem; color: ${color}; margin-bottom: 5px; font-weight: bold;">
+                KEYAKINAN: ${data.confidence}%
+            </div>
+            ${data.opinion}
+        `;
+        
         bubble.style.display = 'block';
         await sleep(4000);
         panel.classList.remove('speaking');

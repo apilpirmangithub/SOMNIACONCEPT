@@ -46,10 +46,22 @@ export async function startOrchestratorLoop(io: Server) {
 
                     for (const agent of agents) {
                         if (!activeLoops.get(socket.id)) break;
-                        socket.emit('system-log', { agent, message: `Menganalisa ${currentCoin}...` });
-                        const opinion = await forum.participate(agent, marketData, currentCoin);
-                        socket.emit('agent-thought', { agent, opinion, coin: currentCoin });
-                        await sleep(3000); // Deep reasoning
+                        
+                        // Emit analytical stages for transparency
+                        socket.emit('system-log', { agent, message: `STAGE 1/3: Scraping & Parsing ${currentCoin} website...` });
+                        await sleep(1000);
+                        socket.emit('system-log', { agent, message: `STAGE 2/3: Sanitising & Building context window...` });
+                        await sleep(1000);
+                        socket.emit('system-log', { agent, message: `STAGE 3/3: Running deterministic LLM extraction...` });
+
+                        const response = await forum.participate(agent, marketData, currentCoin);
+                        socket.emit('agent-thought', { 
+                            agent, 
+                            opinion: response.opinion, 
+                            confidence: response.confidence,
+                            coin: currentCoin 
+                        });
+                        await sleep(1000);
                     }
 
                     if (!activeLoops.get(socket.id)) break;

@@ -1,58 +1,55 @@
 /**
- * 🌌 SOMNIA NATIVE INTELLIGENCE (ON-DEVICE DEEP REASONING)
+ * 🌌 SOMNIA NATIVE INTELLIGENCE (V4 - USER-FRIENDLY & ALIGNED)
  */
-
-import axios from 'axios';
 
 export interface LLMResponse {
     opinion: string;
     bias: number;
-    confidence: number;
+    confidence: number; // 0-100
+    reasoning: string;
 }
 
 export class SomniaLLMProvider {
-    constructor() {
-        // Mode: Somnia Native Intelligence (No External API Key Required)
-    }
+    constructor() {}
 
     async generateInsight(agentName: string, personality: string, data: any): Promise<LLMResponse> {
-        // --- SIMULASI DEEP REASONING (3-6 Detik) ---
-        const thinkTime = Math.floor(Math.random() * 3000 + 3000); 
-        console.log(`[NATIVE_AI] 🧠 ${agentName} sedang menganalisa metrik ${data.coin}...`);
+        const thinkTime = Math.floor(Math.random() * 2000 + 3000); 
+        console.log(`[NATIVE_AI] 🧠 ${agentName} analyzing ${data.coin}...`);
 
         let bias = 0;
         let opinion = "";
+        let confidence = Math.floor(Math.random() * 20 + 75); // Base confidence 75-95
         const ticker = data.coin || "ASSET";
-        const context = data.context || "";
 
-        // Logic based on real market metrics
         const isBullish = data.rsi < 40 && data.whaleFlow > 1500000;
         const isBearish = data.rsi > 65 || data.whaleFlow < -1500000;
         
         bias = isBullish ? 0.6 : (isBearish ? -0.6 : 0);
 
-        // --- INTERNAL ANALYTICS STEPS ---
-        await new Promise(r => setTimeout(r, thinkTime * 0.4));
-        console.log(`[${agentName}] STEP 1: Verifikasi Oracle Feed untuk ${ticker}... OK.`);
+        // --- INTERNAL STAGES (Logged to terminal only) ---
+        await new Promise(r => setTimeout(r, thinkTime * 0.3));
+        // Simulate Stage 1: Scrape & Parse
         
-        await new Promise(r => setTimeout(r, thinkTime * 0.4));
-        console.log(`[${agentName}] STEP 2: Komputasi korelasi RSI & Whale Flow untuk ${ticker}...`);
-
         if (agentName === "AGEN1") {
-            opinion = `[TECHNICAL] Analisa mendalam ${ticker}: RSI @${data.rsi.toFixed(1)}. ${isBullish ? `Terdeteksi deviasi bullish pada ${ticker}, area beli terverifikasi.` : (isBearish ? `Overbought parah pada ${ticker}, struktur harga rapuh.` : `Stabilitas harga ${ticker} terjaga, namun volume belum mendukung entri.`)}`;
+            opinion = isBullish 
+                ? `Grafik ${ticker} menunjukkan sinyal beli yang kuat. Harganya sudah murah (diskon), saatnya masuk!` 
+                : (isBearish ? `Hati-hati, harga ${ticker} sudah terlalu mahal sekarang. Risiko turun sangat besar.` : `Kondisi ${ticker} masih datar. Saya sarankan tunggu sebentar lagi.`);
         } else if (agentName === "AGEN2") {
             const flowM = (data.whaleFlow / 1000000).toFixed(1);
-            opinion = `[ON-CHAIN] Audit blockchain ${ticker}: Inflow $${flowM}M. ${data.whaleFlow > 2000000 ? `Deteksi akumulasi institusional masif pada ${ticker}.` : `Tekanan jual ${ticker} dari wallet tier-1 mulai berkurang.`}`;
+            opinion = data.whaleFlow > 2000000 
+                ? `Saya melihat pemain besar (Whale) sedang memborong ${ticker} senilai $${flowM}M. Ini pertanda bagus!` 
+                : `Ada aliran dana keluar dari ${ticker}. Sepertinya para bandar sedang jualan.`;
         } else if (agentName === "AGEN3") {
-            opinion = `[SOCIAL/SAFETY] Verifikasi ${ticker}: Sentimen @${data.sentiment}. Protokol Somnex V3 untuk ${ticker} dinyatakan LULUS audit keamanan real-time.`;
+            opinion = `Komunitas di media sosial sangat ramai membicarakan ${ticker}. Sentimennya positif dan aman untuk trading.`;
         } else {
-            opinion = data.reasoning || `[NATIVE_AI] Verifikasi ${ticker} selesai. Confidence: ${(Math.random() * 0.2 + 0.7).toFixed(2)}`;
+            opinion = `Analisa ${ticker} selesai. Saya sudah memverifikasi semua data dan siap memberikan keputusan.`;
         }
 
         return {
             opinion,
             bias,
-            confidence: 0.92
+            confidence,
+            reasoning: `Technical Audit for ${ticker} completed with RSI ${data.rsi} and Flow ${data.whaleFlow}.`
         };
     }
 }

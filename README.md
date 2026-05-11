@@ -13,6 +13,8 @@ SOMGEN PREDATOR adalah engine trading multi-agen otonom yang dirancang untuk jar
 *   **🎨 Premium Comic UI**: Dashboard estetik bertema predator dengan animasi gelembung bicara dinamis.
 *   **🔄 Session-Based Reset**: Sistem otomatis mereset orkestrasi setiap kali browser di-refresh untuk menjaga keamanan sesi.
 
+👉 **[BACA DOKUMENTASI ARSITEKTUR LENGKAP DI SINI](./docs/ARCHITECTURE.md)**
+
 ---
 
 ## 🛠️ Struktur Proyek (Modular)

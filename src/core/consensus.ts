@@ -45,11 +45,16 @@ export class CollaborativeForum {
                 bias: insight.bias 
             });
 
-            return insight.opinion;
+            return insight;
         } catch (error) {
             const fallback = `[${agentName}] Koneksi LLM terputus. Menggunakan mode darurat data-driven.`;
             this.sharedContext.push({ agent: agentName, opinion: fallback, bias: 0 });
-            return fallback;
+            return {
+                opinion: fallback,
+                bias: 0,
+                confidence: 50,
+                reasoning: "FALLBACK"
+            };
         }
     }
 

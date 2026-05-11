@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOMGEN PREDATOR - Intelligence Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Outfit:wght@400;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/comic.css">
+</head>
+<body>
+
+    <!-- LANDING PAGE -->
+    <div id="landing">
+        <h1 class="comic-title">SOMGEN PREDATOR</h1>
+        <p class="subtitle">AUTONOMOUS AGENTIC L1 ENGINE</p>
+        
+        <div class="agent-forge-container">
+            <div class="forge-title">CORE COUNCIL MEMBERS:</div>
+            <div class="agent-list-showcase">
+                <div class="agent-mini-card"><b style="color:var(--blue)">AGEN1:</b> Technical Sniper.</div>
+                <div class="agent-mini-card"><b style="color:var(--red)">AGEN2:</b> Whale Hunter.</div>
+                <div class="agent-mini-card"><b style="color:var(--yellow)">AGEN3:</b> Social Radar.</div>
+                <div class="agent-mini-card"><b style="color:var(--purple)">AGEN4:</b> Final Judge.</div>
+            </div>
+
+            <div class="forge-title">FORGE CUSTOM AGENT (SOMNIA LLM):</div>
+            <textarea id="forgePrompt" placeholder="Tulis instruksi untuk VANGUARD-X..."></textarea>
+            <button onclick="forgeAgent()">ACTIVATE CUSTOM AGENT & START MISSION</button>
+        </div>
+
+        <p style="margin-top: 30px; font-family: 'Permanent Marker'; color: #666;">ATAU PILIH MODE STANDAR:</p>
+        <input type="text" class="input-box" id="chat-input" placeholder="KETIK AGGRESSIVE / NORMAL / SAFETY">
+    </div>
+
+    <button id="toggle-sidebar" onclick="toggleSidebar()" style="display: none;">STATS: ON</button>
+
+    <div id="main-container">
+        <div id="comic-page">
+            <div class="panel" id="p1">
+                <div class="panel-media">
+                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnZrcG45bm80ZmE0cGVvN3RjcmI0cGlrOXhsczBrZXRwdjAxbWlsMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8vAtC76U3uS7877rXz/giphy.gif">
+                    <div class="live-tag">LIVE CHART FEED</div>
+                </div>
+                <div class="speech-bubble" id="b1">SCANNING...</div>
+                <div class="panel-footer" style="background: var(--blue);">AGEN1: SANG TEKNISI</div>
+            </div>
+
+            <div class="panel" id="p2">
+                <div class="panel-media">
+                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNWp5NWc4eHpjZ25ycXltNW5rZHpjZTh3eTBmaHk2bmQ3NG1ndnRhdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/uS071hlk6FcrGEF36p/giphy.gif">
+                    <div class="live-tag">SOMNIA MEMPOOL</div>
+                </div>
+                <div class="speech-bubble" id="b2">TRACKING...</div>
+                <div class="panel-footer" style="background: var(--yellow);">AGEN2: INTEL ON-CHAIN</div>
+            </div>
+
+            <div class="panel" id="p3">
+                <div class="panel-media">
+                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGhjdXU5YmJnY25ycXltNW5rZHpjZTh3eTBmaHk2bmQ3NG1ndnRhdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Lopx9eUi34rbq/giphy.gif">
+                    <div class="live-tag">SOCIAL FEED</div>
+                </div>
+                <div class="speech-bubble" id="b3">SCRAPING...</div>
+                <div class="panel-footer" style="background: var(--red); color: white;">AGEN3: FUNDAMENTALIS</div>
+            </div>
+
+            <div class="panel" id="p4">
+                <div class="panel-media">
+                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnZrcG45bm80ZmE0cGVvN3RjcmI0cGlrOXhsczBrZXRwdjAxbWlsMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/a3fV9o23qWcI8/giphy.gif">
+                    <div class="live-tag">VAULT COMMAND</div>
+                </div>
+                <div class="speech-bubble" id="b4">AWAITING...</div>
+                <div class="panel-footer" style="background: var(--purple); color: white;">AGEN4: SANG EKSEKUTOR</div>
+            </div>
+
+            <div class="panel" id="p5" style="display: none;">
+                <div class="panel-media">
+                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnZrcG45bm80ZmE0cGVvN3RjcmI0cGlrOXhsczBrZXRwdjAxbWlsMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Lopx9eUi34rbq/giphy.gif">
+                    <div class="live-tag">LLM VANGUARD</div>
+                </div>
+                <div class="speech-bubble" id="b5">FORGING...</div>
+                <div class="panel-footer" style="background: var(--yellow);">VANGUARD-X</div>
+            </div>
+        </div>
+
+        <div id="terminal-log">
+            <div class="terminal-line"><span class="terminal-time">[SYSTEM]</span> SOMGEN Modular Engine Initialized. Waiting for command...</div>
+        </div>
+
+        <aside id="sidebar">
+            <h2 class="sidebar-title">COMMAND CENTER</h2>
+            <div class="stat-card">
+                <div class="stat-label">VAULT STATUS</div>
+                <div class="stat-value" id="vault-status">ACTIVE</div>
+            </div>
+            <div class="mission-panel">
+                <div class="mission-card" id="m1">
+                    <div class="mission-header"><span>MISSION 01</span><span class="mission-status" id="ms1">STANDBY</span></div>
+                    <p class="mission-desc" id="md1">Awaiting target selection from Commander AGEN0...</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div id="final-modal">
+        <h2 id="final-text">POSITION ACTIVATED!</h2>
+    </div>
+
+    <div class="action-word" id="action-word">BULLISH!</div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

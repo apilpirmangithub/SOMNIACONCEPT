@@ -1,0 +1,390 @@
+:root {
+    --red: #ff3e3e;
+    --blue: #00a8ff;
+    --yellow: #fbc531;
+    --green: #4cd137;
+    --purple: #9c88ff;
+    --bg: #000000;
+    --text: #ffffff;
+    --text-muted: #888;
+    --border: #fff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--bg);
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Outfit', sans-serif;
+    background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* Comic Halftone Overlay */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(#fff 0.5px, transparent 0.5px);
+    background-size: 8px 8px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+#landing {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: 0.8s;
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+    background: var(--bg);
+}
+
+.comic-title {
+    font-family: 'Bangers', cursive;
+    font-size: 8rem;
+    color: var(--yellow);
+    text-shadow: 8px 8px 0px var(--red), 15px 15px 0px #000;
+    transform: rotate(-5deg);
+    margin-bottom: 20px;
+    letter-spacing: 5px;
+}
+
+.subtitle {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 2rem;
+    color: var(--blue);
+    margin-bottom: 40px;
+    transform: rotate(-2deg);
+}
+
+.input-box {
+    background: #fff;
+    padding: 10px 30px;
+    border: 5px solid #000;
+    border-radius: 0;
+    width: 500px;
+    font-family: 'Permanent Marker', cursive;
+    font-size: 1.2rem;
+    color: #000;
+    box-shadow: 10px 10px 0px var(--blue);
+    outline: none;
+    text-transform: uppercase;
+}
+
+.agent-forge-container {
+    margin-top: 40px;
+    background: #000;
+    padding: 20px;
+    border: 4px dashed var(--yellow);
+    width: 800px;
+    text-align: left;
+}
+
+.forge-title {
+    color: var(--yellow);
+    font-family: 'Bangers', cursive;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.agent-list-showcase {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.agent-mini-card {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    padding: 10px;
+    font-size: 0.7rem;
+}
+
+#main-container {
+    display: none;
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-columns: 1fr 380px; 
+    grid-template-rows: 1fr 200px; /* Baris 1: Komik, Baris 2: Terminal */
+    background: #fff;
+    border: 10px solid #000;
+    transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#main-container.sidebar-hidden {
+    grid-template-columns: 1fr 0px;
+    border-right: 10px solid #000;
+}
+
+#comic-page {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    display: grid;
+    padding: 15px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    background: #fff; 
+    border-right: 10px solid #000;
+    overflow: hidden;
+}
+
+/* Sidebar Styling */
+#sidebar {
+    grid-column: 2 / 3;
+    grid-row: 1 / 3; /* Memanjang dari atas ke bawah */
+    background: #000;
+    color: #fff;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    box-shadow: inset 10px 0 20px rgba(0,0,0,0.5);
+    overflow-y: auto;
+    position: relative;
+    transition: 0.5s;
+}
+
+#main-container.sidebar-hidden #sidebar {
+    transform: translateX(380px);
+    padding: 0;
+    opacity: 0;
+}
+
+/* Toggle Button Styling */
+#toggle-sidebar {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 2000;
+    background: var(--red);
+    color: #fff;
+    border: 4px solid #000;
+    font-family: 'Bangers', cursive;
+    padding: 8px 15px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #000;
+    transition: 0.2s;
+}
+
+#toggle-sidebar:hover { transform: scale(1.1); }
+#toggle-sidebar:active { transform: translateY(4px) translateX(4px); box-shadow: 0 0 0 #000; }
+
+#sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient(#333 1px, transparent 1px);
+    background-size: 10px 10px;
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.sidebar-title {
+    font-family: 'Bangers', cursive;
+    font-size: 2.5rem;
+    color: var(--yellow);
+    text-align: center;
+    border-bottom: 4px solid var(--red);
+    padding-bottom: 10px;
+    transform: rotate(-1deg);
+}
+
+.stat-card {
+    background: #1a1a1a;
+    border: 3px solid var(--blue);
+    padding: 15px;
+    font-family: 'Permanent Marker', cursive;
+}
+
+.stat-label { font-size: 1rem; color: var(--blue); margin-bottom: 5px; }
+.stat-value { font-size: 1.8rem; color: #fff; }
+
+.mission-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.mission-card {
+    border: 4px solid #333;
+    padding: 15px;
+    position: relative;
+    background: #0a0a0a;
+    transition: 0.3s;
+}
+
+.mission-card.active {
+    border-color: var(--green);
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.mission-header {
+    font-family: 'Bangers', cursive;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.mission-status {
+    font-size: 0.9rem;
+    color: #555;
+    text-transform: uppercase;
+}
+
+.mission-card.active .mission-status { color: var(--green); }
+
+.mission-desc {
+    font-size: 0.85rem;
+    color: #aaa;
+    line-height: 1.2;
+}
+
+/* Panel Styling */
+.panel {
+    background: #000;
+    border: 6px solid #000;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+.panel.active { opacity: 1; transform: translateY(0); }
+
+.panel.speaking {
+    border-color: var(--yellow);
+    box-shadow: 0 0 30px var(--yellow);
+    z-index: 50;
+    transform: scale(1.02);
+    animation: comic-pulse 1s infinite alternate;
+}
+
+@keyframes comic-pulse {
+    from { box-shadow: 0 0 10px var(--yellow); }
+    to { box-shadow: 0 0 40px var(--yellow); }
+}
+
+.panel-media {
+    flex: 1;
+    width: 100%;
+    background-color: #222;
+    overflow: hidden;
+}
+
+.panel-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: contrast(1.2) brightness(0.9);
+}
+
+.panel-footer {
+    background: var(--yellow);
+    color: #000;
+    padding: 15px;
+    font-family: 'Bangers', cursive;
+    font-size: 1.4rem;
+    border-top: 5px solid #000;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.panel-avatar {
+    width: 60px; height: 60px;
+    border: 3px solid #000;
+    background: #fff;
+}
+
+.speech-bubble {
+    position: absolute;
+    bottom: 80px; left: 20px; right: 20px;
+    background: #fff;
+    border: 4px solid #000;
+    padding: 15px;
+    color: #000;
+    font-weight: 900;
+    font-size: 1rem;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 25% 75%, 10% 100%, 15% 75%, 0% 75%);
+    display: none;
+    z-index: 10;
+}
+
+.action-word {
+    position: absolute;
+    font-family: 'Bangers', cursive;
+    font-size: 4rem;
+    color: #fff;
+    text-shadow: 4px 4px 0 var(--red), -2px -2px 0 var(--blue);
+    z-index: 20;
+    pointer-events: none;
+    display: none;
+}
+
+#final-modal {
+    position: fixed;
+    top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-2deg);
+    background: var(--purple);
+    border: 8px solid #000;
+    padding: 40px;
+    color: white;
+    text-align: center;
+    z-index: 100;
+    display: none;
+    box-shadow: 20px 20px 0px var(--yellow);
+}
+
+#final-modal h2 { font-family: 'Bangers', cursive; font-size: 5rem; text-shadow: 4px 4px 0 #000;}
+
+.live-tag {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: rgba(255,0,0,0.8);
+    color: white;
+    padding: 2px 8px;
+    font-family: monospace;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 3px;
+    animation: blink 1s infinite;
+    z-index: 5;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Live Terminal Styling */
+#terminal-log {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3; /* Di bawah comic page */
+    height: 200px;
+    background: #000;
+    border-top: 10px solid #000;
+    color: var(--green);
+    font-family: 'Courier New', Courier, monospace;
+    padding: 15px;
+    overflow-y: auto;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    border-right: 10px solid #000;
+}
+
+.terminal-line { margin-bottom: 4px; }
+.terminal-time { color: #555; margin-right: 10px; }
+.terminal-agent { color: var(--yellow); font-weight: bold; margin-right: 10px; }

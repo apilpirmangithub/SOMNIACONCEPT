@@ -1,0 +1,23 @@
+{
+  "name": "somgen-core",
+  "version": "2.0.0",
+  "description": "Somnia Multi-Agent Autonomous Engine",
+  "main": "src/core/orchestrator.ts",
+  "scripts": {
+    "start": "ts-node src/core/orchestrator.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "express": "^5.2.1",
+    "playwright": "^1.40.0",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  }
+}

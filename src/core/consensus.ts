@@ -1,149 +1,109 @@
 /**
- * 🤝 SOMNIA COLLABORATIVE REASONING FORUM (REFINED)
- * Mengimplementasikan logika ketat sesuai SKILLS.md masing-masing agen.
+ * 🤝 SOMNIA COLLABORATIVE REASONING FORUM (V2 - REAL LLM READY)
  */
 
+import { SomniaLLMProvider, LLMResponse } from '../providers/llm';
+
 export class CollaborativeForum {
-    private sharedContext: any[] = [];
-    private weights: { [key: string]: number } = { AGEN1: 0.40, AGEN2: 0.35, AGEN3: 0.25 };
+    private llm = new SomniaLLMProvider();
+    private sharedContext: { agent: string, opinion: string, bias: number }[] = [];
+    private weights: { [key: string]: number } = { 
+        AGEN1: 0.30, // Technical
+        AGEN2: 0.30, // On-Chain
+        AGEN3: 0.20, // Social
+        CUSTOM: 0.20 // User Agent
+    };
 
-    /**
-     * Agen masuk ke forum, mendengarkan yang lain, dan memberikan opini berbasis data.
-     */
     async participate(agentName: string, rawData: any, currentCoin: string, context: string = "") {
-        console.log(`\n[${agentName}] Menganalisa berdasarkan SKILLS.md...`);
-        
-        let opinion = "";
-        let bias = 0; // -1 (Bearish) to 1 (Bullish)
+        console.log(`\n[${agentName}] 🧠 Menghubungkan ke Inteligensi Somnia...`);
 
-        switch(agentName) {
-            case "AGEN0": // CONCIERGE (SKILL 1: Dynamic Capital Routing)
-                const yieldAPY = Math.floor(Math.random() * 80);
-                if (yieldAPY > 30) {
-                    bias = 0.1; 
-                    opinion = `[DEFI] Trading saat ini berisiko. Menemukan peluang YIELD di Somnia Pool dengan APY ${yieldAPY}%. Lebih stabil.`;
-                } else {
-                    opinion = `[AGEN0] Kapasitas siap. Merutekan modal ke mesin trading untuk perburuan aktif.`;
-                }
-                break;
+        const personalities: { [key: string]: string } = {
+            "AGEN1": "Technical Analyst yang fokus pada indikator RSI, EMA, dan Volume.",
+            "AGEN2": "On-Chain Detective yang melacak pergerakan Whale dan Mempool Somnia.",
+            "AGEN3": "Social Sentinel yang menganalisis sentimen komunitas dan keamanan protokol.",
+            "AGEN4": "The Judge yang mengambil keputusan final berdasarkan konsensus agen lain.",
+            "CUSTOM": rawData.customPrompt || "Agen kustom yang fleksibel."
+        };
 
-            case "AGEN1": // SANG TEKNISI (Technical & IL Specialist)
-                const rsi = rawData.rsi || 50;
-                const isDeFi = context.includes("DeFi") || context.includes("LP") || context.includes("Vault");
-                
-                if (isDeFi) {
-                    const stability = rsi > 40 && rsi < 60 ? "sangat stabil" : "fluktuatif";
-                    bias = stability === "sangat stabil" ? 1 : 0.5;
-                    opinion = `[TECH] Menganalisa rute LP dari AGEN0. Volatilitas pair ${currentCoin} sedang ${stability}. Risiko Impermanent Loss (IL) minimal.`;
-                } else {
-                    const techState = (rawData.adx || 20) > 25 ? (rawData.close > rawData.ema20 ? "trending UP" : "trending DOWN") : "sideways";
-                    bias = (techState === "trending UP" && rsi < 50) ? 1 : (techState === "trending DOWN" && rsi > 50 ? -1 : 0);
-                    opinion = `[TECH] Struktur ${currentCoin} sedang ${techState} (@RSI:${rsi}). ${bias !== 0 ? `Setup ${bias > 0 ? 'LONG' : 'SHORT'} terdeteksi.` : "Menunggu konfirmasi momentum."}`;
-                }
-                break;
+        try {
+            // Build debate context: Let the current agent see what others said
+            const debateHistory = this.sharedContext
+                .map(c => `[${c.agent} said: ${c.opinion}]`)
+                .join("\n");
+            
+            const fullContext = `MISSION_GOAL: ${context}\nDEBATE_HISTORY:\n${debateHistory}`;
 
-            case "AGEN2": // SANG INTEL ON-CHAIN (Whale & TVL Specialist)
-                const whaleFlow = rawData.whaleFlow || 0; 
-                const isDeFiFlow = context.includes("DeFi") || context.includes("LP") || context.includes("Vault");
+            const insight: LLMResponse = await this.llm.generateInsight(
+                agentName, 
+                personalities[agentName], 
+                { ...rawData, coin: currentCoin, context: fullContext }
+            );
 
-                if (isDeFiFlow) {
-                    const poolHealth = whaleFlow > 0 ? "inflow positif" : "distribusi ringan";
-                    bias = whaleFlow > -500000 ? 1 : 0.2;
-                    opinion = `[ON-CHAIN] Memantau Smart Contract Pool. Terdeteksi ${poolHealth} ke dalam protokol. Likuiditas untuk ${currentCoin} cukup dalam.`;
-                } else {
-                    const flowType = whaleFlow > 1000000 ? "akumulasi masif" : (whaleFlow < -1000000 ? "distribusi agresif" : "konsolidasi");
-                    bias = whaleFlow > 800000 ? 1 : (whaleFlow < -800000 ? -1 : 0);
-                    opinion = `[ON-CHAIN] Deteksi ${flowType} sebesar $${Math.abs(whaleFlow).toLocaleString()}. Smart money sedang bergerak ${bias > 0 ? "akumulatif" : "distributif"}.`;
-                }
-                break;
+            this.sharedContext.push({ 
+                agent: agentName, 
+                opinion: insight.opinion, 
+                bias: insight.bias 
+            });
 
-            case "AGEN3": // SANG FUNDAMENTALIS (Sentiment & Security Specialist)
-                const sentiment = rawData.sentiment || 50; 
-                const isDeFiSecurity = context.includes("DeFi") || context.includes("LP") || context.includes("Vault");
-
-                if (isDeFiSecurity) {
-                    bias = sentiment > 40 ? 1 : -1;
-                    opinion = `[SOCIAL] Audit reputasi protokol. Somnex V3 memiliki record keamanan solid. Sentimen terhadap pool ${currentCoin} positif (@${sentiment}).`;
-                } else {
-                    const psych = sentiment > 70 ? "euforia" : (sentiment < 30 ? "panik" : "skeptis");
-                    bias = sentiment > 75 ? 0.6 : (sentiment < 25 ? -0.6 : 0);
-                    opinion = `[SOCIAL] Psikologi market ${psych} (@${sentiment}). ${bias !== 0 ? "Narasi mendukung pergerakan." : "Belum ada katalis fundamental."}`;
-                }
-                break;
-            case "CUSTOM": // VANGUARD-X (Dynamic User Agent)
-                const prompt = (rawData as any).customPrompt || "Analytical Sniper";
-                let multiplier = 1;
-                if (prompt.toLowerCase().includes("agresif")) multiplier = 1.3;
-                if (prompt.toLowerCase().includes("skeptis")) multiplier = 0.7;
-                
-                bias = (rawData.rsi > 50 ? 1 : -1) * multiplier;
-                opinion = `[CUSTOM] Menjalankan protokol kustom: ${prompt}. Bias keputusan: ${bias.toFixed(2)}.`;
-                break;
+            return insight.opinion;
+        } catch (error) {
+            const fallback = `[${agentName}] Koneksi LLM terputus. Menggunakan mode darurat data-driven.`;
+            this.sharedContext.push({ agent: agentName, opinion: fallback, bias: 0 });
+            return fallback;
         }
-
-        this.sharedContext.push({ agent: agentName, opinion, bias });
-        // Dynamically add CUSTOM weight if it participates
-        if (agentName === "CUSTOM" && !this.weights["CUSTOM"]) {
-            this.weights["CUSTOM"] = 0.35; 
-        }
-        return opinion;
     }
 
-    getLatestOpinion(): string {
-        return this.sharedContext.length > 0 ? this.sharedContext[this.sharedContext.length - 1].opinion : "";
-    }
-
-    /**
-     * Resolusi akhir oleh AGEN4 (SKILL 1 & 5)
-     */
-    resolveConsensus(userProfile: string) {
-        let totalScore = 0;
-        let activeAgents = 0;
-        let defiOpportunity = "";
-        let defiScore = 0;
+    resolveConsensus(userProfile: string, currentCoin: string) {
+        let weightedScore = 0;
+        let totalWeight = 0;
 
         this.sharedContext.forEach(entry => {
-            if (this.weights[entry.agent]) {
-                totalScore += (entry.bias * this.weights[entry.agent]);
-                activeAgents++;
-            }
-            if (entry.opinion.includes("[DEFI]")) {
-                defiScore += 0.35; 
-                defiOpportunity = entry.opinion;
-            }
+            const weight = this.weights[entry.agent] || 0.1;
+            weightedScore += (entry.bias * weight);
+            totalWeight += weight;
         });
 
-        let executionMode = userProfile;
-        if (activeAgents < 3) executionMode = "SAFETY";
+        const finalScore = totalWeight > 0 ? (weightedScore / totalWeight) : 0;
+        // TINGKATKAN STANDAR: Threshold dibuat lebih tinggi agar tidak mudah "berpendapat"
+        const threshold = userProfile === "AGGRESSIVE" ? 0.45 : (userProfile === "SAFETY" ? 0.75 : 0.60);
 
-        const tradingConviction = Math.abs(totalScore);
-        const threshold = executionMode === "AGGRESSIVE" ? 0.4 : (executionMode === "SAFETY" ? 0.15 : 0.25);
+        let decision = "REJECT";
+        const isDefiProposed = this.sharedContext.some(entry => entry.opinion.includes("[DEFI]"));
 
-        if (tradingConviction >= threshold && tradingConviction >= defiScore) {
+        if (Math.abs(finalScore) >= threshold) {
+            // Kalkulasi Leverage berdasarkan Confidence Score
+            const baseLev = userProfile === "AGGRESSIVE" ? 20 : (userProfile === "SAFETY" ? 2 : 5);
+            const dynamicLeverage = Math.floor(baseLev * (Math.abs(finalScore) * 2));
+            const decisionType = finalScore > 0 ? "LONG" : "SHORT";
+
             return {
-                decision: totalScore > 0 ? "LONG" : "SHORT",
-                score: totalScore.toFixed(2),
+                decision: decisionType,
+                score: finalScore,
+                leverage: dynamicLeverage,
                 type: "TRADING",
-                mode: executionMode,
-                reasoning: this.sharedContext.map(o => o.opinion).join(" | ")
+                reasoning: `[KONSENSUS TERCAPAI] Skor Keyakinan: ${finalScore.toFixed(2)}. AGEN4 mengeksekusi ${decisionType} ${currentCoin} dengan LEVERAGE ${dynamicLeverage}X.`
             };
-        } else if (defiScore > 0.3) {
+        } else if (isDefiProposed) {
             return {
                 decision: "EXECUTE_DEFI",
-                score: defiScore.toFixed(2),
+                score: 0.5,
+                leverage: 1,
                 type: "DEFI",
-                mode: executionMode,
-                reasoning: `[OPPORTUNITY] Trading conviction rendah (${tradingConviction.toFixed(2)}). Beralih ke: ${defiOpportunity}`
+                reasoning: `[KONSENSUS DEFI] Divergensi trading tinggi. AGEN4 memutuskan memindahkan modal ${currentCoin} ke Somnex Yield Vault (Risk: Low).`
             };
         }
 
         return {
             decision: "REJECT",
-            score: totalScore.toFixed(2),
+            score: finalScore,
+            leverage: 0,
             type: "NONE",
-            mode: executionMode,
-            reasoning: "Tidak ada peluang profit tinggi yang memenuhi standar keamanan saat ini."
+            reasoning: `[MISI DIBATALKAN] Skor @${finalScore.toFixed(2)} tidak memenuhi standar ${userProfile}. Terlalu berisiko untuk mengeksekusi ${currentCoin}.`
         };
+    }
+
+    getLatestOpinion(): string {
+        return this.sharedContext.length > 0 ? this.sharedContext[this.sharedContext.length - 1].opinion : "";
     }
 
     clear() {

@@ -1,95 +1,81 @@
 import { CollaborativeForum } from './consensus';
 import { fetchLiveSomniaData } from '../providers/somnia';
+import { EvidenceScraper } from '../providers/social';
+import { Server } from 'socket.io';
 
-// Simulated state management
-let activeActions = {
-    TRADING_POSITIONS: 0,
-    DEFI_POSITIONS: 0
-};
-const MAX_CONCURRENT_ACTIONS = 2;
-let userProfile = "AGGRESSIVE"; // User default
-let customAgentActive = true;  // Simulated: User forged an agent
-let customAgentPrompt = "Jadilah analis agresif yang mengejar yield tinggi"; 
-
-const forum = new CollaborativeForum();
+const scraper = new EvidenceScraper();
 
 async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
- * 👑 SOMGEN MASTER ORCHESTRATOR (SOMNIA NATIVE) 👑
+ * 🔄 ORCHESTRATOR REACTIVE LOOP (V3 - CLEAN VERSION)
  */
-async function startOrchestratorLoop() {
-    console.log("==================================================");
-    console.log("🌌 INITIATING SOMGEN MASTER ORCHESTRATOR 🌌");
-    console.log("      (100% SOMNIA NATIVE DATA FEED)");
-    console.log("==================================================\n");
+export async function startOrchestratorLoop(io: Server) {
+    let activeLoops = new Map<string, boolean>();
 
-    const targetCoins = ["SOMI", "WETH", "WBTC"];
+    io.on('connection', (socket) => {
+        console.log(`[ORCHESTRATOR] 🌌 User ${socket.id} connected.`);
+        activeLoops.set(socket.id, false);
 
-    while (true) {
-        try {
-            const totalActive = activeActions.TRADING_POSITIONS + activeActions.DEFI_POSITIONS;
+        socket.on('start-mission', async (data) => {
+            if (activeLoops.get(socket.id)) return;
+            
+            activeLoops.set(socket.id, true);
+            const userProfile = data.mode || "AGGRESSIVE";
+            const targetCoins = ["SOMI", "WETH", "WBTC"];
+            const forum = new CollaborativeForum();
 
-            if (totalActive >= MAX_CONCURRENT_ACTIONS) {
-                console.log(`\n[ORCHESTRATOR] 🛑 Max capacity reached. Monitoring active positions...`);
-                await sleep(10000);
-                // Simple exit simulation
-                if (Math.random() > 0.8) {
-                    if (activeActions.TRADING_POSITIONS > 0) activeActions.TRADING_POSITIONS--;
-                    else if (activeActions.DEFI_POSITIONS > 0) activeActions.DEFI_POSITIONS--;
+            while (activeLoops.get(socket.id)) {
+                try {
+                    const currentCoin = targetCoins[Math.floor(Math.random() * targetCoins.length)];
+                    const marketData = await fetchLiveSomniaData(currentCoin);
+
+                    forum.clear();
+                    const agents = ["AGEN0", "AGEN1", "AGEN2", "AGEN3"];
+                    const personalities: any = {
+                        "AGEN0": "Lead Strategist",
+                        "AGEN1": "Technical Analyst",
+                        "AGEN2": "On-Chain Sleuth",
+                        "AGEN3": "Social Sentinel",
+                        "AGEN4": "Executive Judge",
+                        "CUSTOM": "Vanguard-X Custom Agent"
+                    };
+                    if (data.isCustomActive) agents.push("CUSTOM");
+
+                    for (const agent of agents) {
+                        if (!activeLoops.get(socket.id)) break;
+                        socket.emit('system-log', { agent, message: `Menganalisa ${currentCoin}...` });
+                        const opinion = await forum.participate(agent, marketData, currentCoin);
+                        socket.emit('agent-thought', { agent, opinion, coin: currentCoin });
+                        await sleep(3000); // Deep reasoning
+                    }
+
+                    if (!activeLoops.get(socket.id)) break;
+
+                    const consensus = forum.resolveConsensus(userProfile, currentCoin);
+                    
+                    socket.emit('agent-thought', { agent: 'AGEN4', opinion: consensus.reasoning, coin: currentCoin });
+                    await sleep(2000);
+                    socket.emit('consensus-reached', consensus);
+
+                    if (consensus.decision !== "REJECT") {
+                        await scraper.captureProof("AGEN4", "https://somnia.network");
+                    }
+
+                    console.log(`[ORCHESTRATOR] Round complete for ${socket.id}. Cooling down...`);
+                    await sleep(10000);
+                } catch (error: any) {
+                    console.error("[CRITICAL] Loop error:", error.message);
+                    await sleep(5000);
                 }
-                continue;
             }
+        });
 
-            const currentCoin = targetCoins[Math.floor(Math.random() * targetCoins.length)];
-            
-            // 1. DATA INGESTION (REAL SOMNIA RPC MOCK)
-            console.log(`\n[SCANNER] 🟢 Hunting on Somnia Network for ${currentCoin}...`);
-            const marketData = await fetchLiveSomniaData(currentCoin);
-            
-            console.log(`[ORACLE] Price: $${marketData.price.toFixed(4)} | RSI: ${marketData.rsi} | Flow: $${marketData.whaleFlow.toLocaleString()}`);
-
-            // 2. COLLABORATIVE REASONING
-            forum.clear();
-            await forum.participate("AGEN0", marketData, currentCoin, "");
-            const commanderMsg = forum.getLatestOpinion(); // Get the rute suggested by Commander
-            
-            await forum.participate("AGEN1", marketData, currentCoin, commanderMsg);
-            await forum.participate("AGEN2", marketData, currentCoin, commanderMsg);
-            await forum.participate("AGEN3", marketData, currentCoin, commanderMsg);
-
-            if (customAgentActive) {
-                await forum.participate("CUSTOM", { ...marketData, customPrompt: customAgentPrompt } as any, currentCoin, commanderMsg);
-            }
-
-            // 3. CONSENSUS RESOLUTION
-            const consensus = forum.resolveConsensus(userProfile);
-            console.log(`\n[JUDGE] Final Decision: ${consensus.decision} (Confidence: ${consensus.score.toFixed(2)})`);
-            console.log(`[REASON] ${consensus.reasoning}`);
-
-            // 4. EXECUTION
-            if (consensus.decision !== "REJECT") {
-                if (consensus.type === "DEFI") {
-                    activeActions.DEFI_POSITIONS++;
-                    console.log(`[EXECUTOR] 💰 DEFI YIELD DEPLOYED TO SOMNIA PROTOCOL.`);
-                } else {
-                    activeActions.TRADING_POSITIONS++;
-                    console.log(`[EXECUTOR] ⚡ TRADING POSITION OPENED ON SOMNEX PERPS.`);
-                }
-            } else {
-                console.log(`[EXECUTOR] 🛡️ MISSION ABORTED FOR SAFETY.`);
-            }
-
-            console.log("\n[ORCHESTRATOR] ⏱️ Cycle complete. Resting 10s...");
-            await sleep(10000);
-
-        } catch (error: any) {
-            console.error("\n[🚨 CRITICAL] Orchestrator error:", error.message);
-            await sleep(10000);
-        }
-    }
+        socket.on('disconnect', () => {
+            activeLoops.set(socket.id, false);
+            activeLoops.delete(socket.id);
+        });
+    });
 }
-
-startOrchestratorLoop();

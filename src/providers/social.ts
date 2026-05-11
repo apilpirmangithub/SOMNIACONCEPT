@@ -14,22 +14,22 @@ export class EvidenceScraper {
      */
     async captureProof(agentName: string, targetUrl: string) {
         console.log(`[${agentName}] 📸 INITIATING REAL-TIME SCRAPING: ${targetUrl}`);
-        
+
         const browser = await chromium.launch();
         const page = await browser.newPage();
-        
+
         try {
             await page.setViewportSize({ width: 800, height: 600 });
             await page.goto(targetUrl, { waitUntil: 'networkidle' });
-            
+
             // Wait a bit for charts/data to load fully
-            await page.waitForTimeout(5000); 
+            await page.waitForTimeout(5000);
 
             const outputPath = path.join(process.cwd(), agentName, `${agentName}_OUTPUT`, 'evidence.png');
-            
+
             await page.screenshot({ path: outputPath });
             console.log(`[${agentName}] ✅ EVIDENCE CAPTURED: ${outputPath}`);
-            
+
         } catch (error) {
             console.error(`[${agentName}] ❌ SCRAPING FAILED:`, error);
         } finally {
